@@ -1,0 +1,30 @@
+{
+  "id": "coastal_wreck",
+  "text": "As you walk the shoreline, you realize the shape ahead is a wrecked fishing boat. It's half-buried in sand, and the hull is cracked open like a ribcage. There's a trail of disturbed sand leading toward it. Something — or someone — has been here recently.",
+  "choices": [
+    {
+      "text": "Climb aboard the wreck and investigate",
+      "nextNode": "wreck_interior",
+      "effects": {
+        "temperatureChange": 1,
+        "sicknessChange": 2
+      }
+    },
+    {
+      "text": "Search around the wreck for supplies",
+      "nextNode": "wreck_supplies",
+      "effects": {
+        "hydrationChange": 3,
+        "hungerChange": 2
+      }
+    },
+    {
+      "text": "Keep moving down the coastline",
+      "nextNode": "coastal_walk",
+      "effects": {
+        "hydrationChange": -3,
+        "temperatureChange": -1
+      }
+    }
+  ]
+}

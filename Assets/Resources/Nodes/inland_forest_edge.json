@@ -1,0 +1,31 @@
+{
+  "id": "inland_forest_edge",
+  "text": "You stumble away from the beach and into the underbrush. The terrain rises slightly and the air is thick with the scent of pine. The forest is dense but not silent — wind rustles the trees, and something distant snaps a branch. You spot what might be a dirt path.",
+  "choices": [
+    {
+      "text": "Follow the dirt path deeper inland",
+      "nextNode": "forest_path",
+      "effects": {
+        "hydrationChange": -3,
+        "hungerChange": -1,
+        "temperatureChange": 2
+      }
+    },
+    {
+      "text": "Search the forest for resources",
+      "nextNode": "forest_scavenge",
+      "effects": {
+        "hydrationChange": -2,
+        "sicknessChange": 1
+      }
+    },
+    {
+      "text": "Head back to the shoreline",
+      "nextNode": "shoreline_returned",
+      "effects": {
+        "hydrationChange": -1,
+        "temperatureChange": -2
+      }
+    }
+  ]
+}

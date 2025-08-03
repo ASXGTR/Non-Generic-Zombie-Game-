@@ -1,0 +1,31 @@
+{
+  "id": "shoreline_resting",
+  "text": "You sit on the damp sand, pulling your knees to your chest. Your breathing slows as you try to regain your strength. The wind continues to blow, chilling your skin. You feel your stomach groan, and your head begins to ache.",
+  "choices": [
+    {
+      "text": "Eat the fruit in your pocket",
+      "nextNode": "after_fruit",
+      "effects": {
+        "hungerChange": 10,
+        "hydrationChange": 5,
+        "sicknessChange": -2
+      }
+    },
+    {
+      "text": "Use the rag to wrap your arms",
+      "nextNode": "makeshift_warmth",
+      "effects": {
+        "temperatureChange": 3,
+        "sicknessChange": -1
+      }
+    },
+    {
+      "text": "Stand up and head inland",
+      "nextNode": "inland_forest_edge",
+      "effects": {
+        "hydrationChange": -2,
+        "temperatureChange": 1
+      }
+    }
+  ]
+}
