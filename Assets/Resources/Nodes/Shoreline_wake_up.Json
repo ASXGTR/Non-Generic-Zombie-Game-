@@ -1,0 +1,48 @@
+{
+  "id": "shoreline_wake_up",
+  "text": "Your head throbs. Your mouth is dry.\n\nYou blink against the harsh morning light. A cold breeze rolls in from the ocean, and you're lying face-down on wet sand. You slowly push yourself up and sit. The salty air burns your throat.\n\nYou're on a shoreline, but nothing looks familiar. The beach is empty. No boats. No birds. Just wreckage. You check yourself—torn jeans, a soaked T-shirt, a glowstick dangling from a cord around your neck. In your pocket, a bruised piece of fruit. A strip of cloth is tied to your arm.\n\nYou're shivering.\n\nYou don’t remember how you got here.\n\nSomething is wrong.",
+  "choices": [
+    {
+      "text": "Search inland for signs of life",
+      "nextNode": "inland_forest_edge",
+      "effects": {
+        "hydrationChange": -2,
+        "temperatureChange": 1,
+        "healthChange": 0,
+        "hungerChange": 0,
+        "sicknessChange": 0
+      }
+    },
+    {
+      "text": "Follow the beach toward a distant shape",
+      "nextNode": "coastal_wreck",
+      "effects": {
+        "hydrationChange": -1,
+        "temperatureChange": -1,
+        "healthChange": 0,
+        "hungerChange": 0,
+        "sicknessChange": 0
+      }
+    },
+    {
+      "text": "Sit and try to regain strength",
+      "nextNode": "shoreline_resting",
+      "effects": {
+        "temperatureChange": -2,
+        "sicknessChange": 3,
+        "healthChange": 0,
+        "hungerChange": 0,
+        "hydrationChange": 0
+      }
+    }
+  ],
+  "startStats": {
+    "health": 100,
+    "temperature": -10,
+    "hydration": 50,
+    "hunger": 50,
+    "sickness": 70,
+    "inventory": ["Fruit", "Rag", "Glowstick (inactive)"],
+    "clothing": ["T-Shirt", "Jeans"]
+  }
+}
