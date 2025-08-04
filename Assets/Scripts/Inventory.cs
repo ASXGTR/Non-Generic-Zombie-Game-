@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿// Game.Inventory.Inventory.cs
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -6,55 +7,39 @@ namespace Game.Inventory
 {
     public class Inventory : MonoBehaviour
     {
-        public List<Item> ownedItems = new List<Item>();
-        public Item rightHand;
-        public Item leftHand;
-
+        public List<InventoryItem> ownedItems = new();
+        public InventoryItem rightHand;
+        public InventoryItem leftHand;
         public bool auditComplete = false;
 
-        private List<Item> registeredContainers = new List<Item>();
+        private List<InventoryItem> registeredContainers = new();
 
-        /// <summary>
-        /// Returns true if there are any valid registered gear containers.
-        /// </summary>
-        public bool hasRegisteredGearContainers
-        {
-            get
-            {
-                return registeredContainers.Any(item =>
-                    item != null &&
-                    item.isContainer &&
-                    item.isEquipped &&
-                    item.storageCapacity > 0 &&
-                    item.internalStorage != null);
-            }
-        }
+        public bool hasRegisteredGearContainers => registeredContainers.Any(item =>
+            item != null &&
+            item.isContainer &&
+            item.isEquipped &&
+            item.storageCapacity > 0 &&
+            item.internalStorage != null);
 
-        /// <summary>
-        /// Automatically equips all unequipped clothing on game start.
-        /// </summary>
         public void AutoEquipStarterGear()
         {
-            foreach (Item item in ownedItems)
+            foreach (var item in ownedItems)
             {
                 if (item.itemType == ItemType.Clothing && !item.isEquipped)
                 {
                     EquipItem(item);
-                    Debug.Log($"[Inventory] Auto-equipped: {item.itemName}");
+                    Debug.Log($"[Inventory] Auto-equipped: {item.ItemName}");
                 }
             }
 
             Debug.Log("[Inventory] Starter gear auto-equipped.");
         }
 
-        /// <summary>
-        /// Finds and registers container gear pieces with storage capacity.
-        /// </summary>
         public void AuditOwnedGearContainers()
         {
             registeredContainers.Clear();
 
-            foreach (Item item in ownedItems)
+            foreach (var item in ownedItems)
             {
                 if (item == null)
                 {
@@ -62,14 +47,14 @@ namespace Game.Inventory
                     continue;
                 }
 
-                Debug.Log($"🔍 Audit Gear: {item.itemName} | isContainer: {item.isContainer} | Cap: {item.storageCapacity} | Equipped: {item.isEquipped}");
+                Debug.Log($"🔍 Audit Gear: {item.ItemName} | isContainer: {item.isContainer} | Cap: {item.storageCapacity} | Equipped: {item.isEquipped}");
 
                 if (item.isContainer && item.storageCapacity > 0)
                 {
                     if (item.internalStorage == null)
                     {
-                        item.internalStorage = new List<Item>();
-                        Debug.Log($"🛠️ Container force-initialized: {item.itemName}");
+                        item.internalStorage = new List<InventoryItem>();
+                        Debug.Log($"🛠️ Container force-initialized: {item.ItemName}");
                     }
 
                     RegisterContainer(item);
@@ -80,68 +65,30 @@ namespace Game.Inventory
             auditComplete = true;
         }
 
-        /// <summary>
-        /// Registers valid container gear into the active container list.
-        /// </summary>
-        public void RegisterContainer(Item containerGear)
+        public void RegisterContainer(InventoryItem containerGear)
         {
-            if (containerGear == null)
+            if (containerGear == null || containerGear.storageCapacity <= 0)
             {
-                Debug.LogWarning("⚠️ Tried to register null container gear.");
-                return;
-            }
-
-            if (containerGear.storageCapacity <= 0)
-            {
-                Debug.LogWarning($"⚠️ Gear '{containerGear.itemName}' has 0 capacity. Not registered.");
+                Debug.LogWarning($"⚠️ Invalid container: {containerGear?.ItemName}");
                 return;
             }
 
             if (!registeredContainers.Contains(containerGear))
             {
                 registeredContainers.Add(containerGear);
-                Debug.Log($"📦 Registered container: {containerGear.itemName}");
+                Debug.Log($"📦 Registered container: {containerGear.ItemName}");
             }
         }
 
-        /// <summary>
-        /// Returns all equipped gear pieces.
-        /// </summary>
-        public List<Item> GetEquippedGear()
-        {
-            List<Item> equipped = new List<Item>();
-            foreach (Item item in ownedItems)
-            {
-                if (item != null && item.isEquipped)
-                    equipped.Add(item);
-            }
-            return equipped;
-        }
+        public List<InventoryItem> GetEquippedGear() =>
+            ownedItems.Where(i => i != null && i.isEquipped).ToList();
 
-        /// <summary>
-        /// Returns the currently equipped item for a specific gear slot.
-        /// Used by Gear UI to populate slot visuals.
-        /// </summary>
-        public ItemData GetEquippedItemBySlotType(GearSlotType slotType)
-        {
-            foreach (Item item in ownedItems)
-            {
-                if (item != null && item.isEquipped && item.gearSlotType == slotType)
-                    return item.data;
-            }
+        public ItemData GetEquippedItemBySlotType(GearSlotType slotType) =>
+            ownedItems.FirstOrDefault(i => i != null && i.isEquipped && i.gearSlotType == slotType)?.data;
 
-            return null;
-        }
+        public List<InventoryItem> GetActiveStorageGear() => registeredContainers;
 
-        public List<Item> GetActiveStorageGear()
-        {
-            return registeredContainers;
-        }
-
-        /// <summary>
-        /// Tries to place the given item into the first available storage container.
-        /// </summary>
-        public void AddItemToFirstAvailableSlot(Item item)
+        public void AddItemToFirstAvailableSlot(InventoryItem item)
         {
             if (item == null)
             {
@@ -149,29 +96,24 @@ namespace Game.Inventory
                 return;
             }
 
-            bool placed = false;
-            foreach (Item gear in GetActiveStorageGear())
+            foreach (var gear in GetActiveStorageGear())
             {
-                if (gear == null)
-                    continue;
+                if (gear == null) continue;
 
-                if (gear.internalStorage == null)
-                    gear.internalStorage = new List<Item>();
+                gear.internalStorage ??= new List<InventoryItem>();
 
                 if (gear.internalStorage.Count < gear.storageCapacity)
                 {
                     gear.internalStorage.Add(item);
-                    Debug.Log($"✅ Placed '{item.itemName}' into '{gear.itemName}'");
-                    placed = true;
-                    break;
+                    Debug.Log($"✅ Placed '{item.ItemName}' into '{gear.ItemName}'");
+                    return;
                 }
             }
 
-            if (!placed)
-                Debug.LogWarning($"❌ No available storage found for '{item.itemName}'");
+            Debug.LogWarning($"❌ No available storage found for '{item.ItemName}'");
         }
 
-        public void AddItem(Item item)
+        public void AddItem(InventoryItem item)
         {
             if (item == null)
             {
@@ -183,23 +125,18 @@ namespace Game.Inventory
 
             if (registeredContainers.Count == 0)
             {
-                Debug.Log($"📥 No active storage gear. '{item.itemName}' remains loose.");
+                Debug.Log($"📥 No active storage gear. '{item.ItemName}' remains loose.");
                 return;
             }
 
             AddItemToFirstAvailableSlot(item);
         }
 
-        public void CreateStorageSlot(SlotType slotType)
-        {
-            Debug.Log($"📦 Storage slot of type '{slotType}' requested.");
-        }
-
-        public void EquipItem(Item item)
+        public void EquipItem(InventoryItem item)
         {
             if (item == null || item.itemType != ItemType.Clothing)
             {
-                Debug.LogWarning($"❌ Cannot equip: {item?.itemName}");
+                Debug.LogWarning($"❌ Cannot equip: {item?.ItemName}");
                 return;
             }
 
@@ -208,12 +145,12 @@ namespace Game.Inventory
             if (!ownedItems.Contains(item))
                 ownedItems.Add(item);
 
-            Debug.Log($"🧥 Equipped: {item.itemName}");
+            Debug.Log($"🧥 Equipped: {item.ItemName}");
 
             if (item.storageCapacity > 0 && item.internalStorage == null)
             {
-                item.internalStorage = new List<Item>();
-                Debug.Log($"🧠 Initialized storage on: {item.itemName}");
+                item.internalStorage = new List<InventoryItem>();
+                Debug.Log($"🧠 Initialized storage on: {item.ItemName}");
             }
 
             RegisterContainer(item);
@@ -221,19 +158,18 @@ namespace Game.Inventory
 
         public void PrintStorageDebug()
         {
-            foreach (Item gear in GetActiveStorageGear())
+            foreach (var gear in GetActiveStorageGear())
             {
                 int used = gear.internalStorage?.Count ?? 0;
-                Debug.Log($"[Inventory] {gear.itemName}: {used}/{gear.storageCapacity}");
+                Debug.Log($"[Inventory] {gear.ItemName}: {used}/{gear.storageCapacity}");
             }
         }
 
-        public List<Item> GetAllItems()
+        public List<InventoryItem> GetAllItems()
         {
-            List<Item> all = new List<Item>();
-            all.AddRange(ownedItems);
+            List<InventoryItem> all = new(ownedItems);
 
-            foreach (Item gear in GetActiveStorageGear())
+            foreach (var gear in GetActiveStorageGear())
             {
                 if (gear?.internalStorage != null)
                     all.AddRange(gear.internalStorage);

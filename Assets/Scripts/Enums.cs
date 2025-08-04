@@ -1,8 +1,12 @@
-﻿namespace Game.Inventory
+﻿using System;
+using UnityEngine;
+
+namespace Game.Inventory
 {
-    /// <summary>
-    /// High-level categorization for item behavior and use.
-    /// </summary>
+    // ────────────────────────────────────────────────────────
+    // 🧩 Item Classification
+    // ────────────────────────────────────────────────────────
+
     public enum ItemType
     {
         Bag,
@@ -13,9 +17,51 @@
         Misc
     }
 
-    /// <summary>
-    /// Subcategories for Consumable items.
-    /// </summary>
+    public enum ItemCategory
+    {
+        Gear,
+        Tool,
+        Weapon,
+        Consumable,
+        Resource,
+        KeyItem,
+        Junk,
+        Container
+    }
+
+    public enum ToolType
+    {
+        None,
+        Knife,
+        Axe,
+        Saw,
+        Crowbar,
+        Wrench,
+        Shovel,
+        Lockpick,
+        Torch
+        // Futureproof: MultiTool, Pickaxe, Spear
+    }
+
+    [Flags]
+    public enum ItemFlag
+    {
+        None = 0,
+        Perishable = 1 << 0,
+        Throwable = 1 << 1,
+        Stackable = 1 << 2,
+        Unique = 1 << 3,
+        QuestItem = 1 << 4,
+        Ignitable = 1 << 5,
+        Flammable = 1 << 6,
+        Radioactive = 1 << 7,
+        Hidden = 1 << 8
+    }
+
+    // ────────────────────────────────────────────────────────
+    // 🥩 Consumables, Cooking, Temperature
+    // ────────────────────────────────────────────────────────
+
     public enum ConsumableType
     {
         None,
@@ -23,25 +69,38 @@
         Drink,
         RawFood,
         SpoiledFood
+        // Futureproof: Medicine, Syrup, Tea
     }
 
-    /// <summary>
-    /// Flags for cooking methods to allow multiple techniques per item.
-    /// </summary>
-    [System.Flags]
+    [Flags]
     public enum CookingMethod
     {
         None = 0,
         Grill = 1 << 0,
         Boil = 1 << 1,
         Bake = 1 << 2,
-        Roast = 1 << 3
-        // Futureproof: Add Smoke, Steam, Freeze, etc.
+        Roast = 1 << 3,
+        Smoke = 1 << 4,
+        Steam = 1 << 5,
+        Freeze = 1 << 6,
+        Microwave = 1 << 7
     }
 
-    /// <summary>
-    /// Categorization for environmental zones or biome states.
-    /// </summary>
+    public enum TemperatureState
+    {
+        Normal,
+        Warm,
+        Hot,
+        Cold,
+        Frozen,
+        Burnt
+        // Futureproof: Icy, Boiling, Radiant
+    }
+
+    // ────────────────────────────────────────────────────────
+    // 🌍 Environmental Context
+    // ────────────────────────────────────────────────────────
+
     public enum EnvironmentType
     {
         Boat,
@@ -53,18 +112,20 @@
         Urban,
         Volcanic,
         Woods
+        // Futureproof: Marsh, Ruins, ToxicZone
     }
 
-    /// <summary>
-    /// Gear slot mapping for clothing and equipment.
-    /// </summary>
+    // ────────────────────────────────────────────────────────
+    // 🧥 Gear & Slot Mapping
+    // ────────────────────────────────────────────────────────
+
     public enum ClothingSlot
     {
         Backpack,
         Belt,
         Chest,
         ChestHolster,
-        BeltHolster,     // ✅ NEW: Waist-mounted holsters
+        BeltHolster,
         Face,
         Gloves,
         HandLeft,
@@ -72,13 +133,12 @@
         Head,
         Pants,
         Shoes,
-        Vest
-        // Futureproof: Neckwear, Eyewear, Jewelry, etc.
+        Vest,
+        Neckwear,
+        Eyewear,
+        Jewelry
     }
 
-    /// <summary>
-    /// Defines what kind of storage slots a gear item can contribute.
-    /// </summary>
     public enum SlotType
     {
         General,
@@ -88,13 +148,12 @@
         Food,
         Clothing,
         KeyItem,
-        Holster           // ✅ NEW: Slot type for mounted containers
-        // Futureproof: Crafting, WeaponMods, Documents, etc.
+        Holster,
+        Crafting,
+        WeaponMods,
+        Documents
     }
 
-    /// <summary>
-    /// UI-level mapping for gear slot visuals and equip zones.
-    /// </summary>
     public enum GearSlotType
     {
         Head,
@@ -106,14 +165,19 @@
         Holster,
         Belt,
         Utility,
-        Accessory
-        // Futureproof: Wrist, Neck, Eyes, Rings, Pockets, etc.
+        Accessory,
+        Wrist,
+        Neck,
+        Eyes,
+        Rings,
+        Pockets
     }
 
-    /// <summary>
-    /// Item condition impacts stats, durability, or comfort.
-    /// </summary>
-    public enum Condition
+    // ────────────────────────────────────────────────────────
+    // ⚠️ Condition & Status States
+    // ────────────────────────────────────────────────────────
+
+    public enum ItemCondition
     {
         Broken,
         Damaged,
@@ -122,32 +186,6 @@
         Worn
     }
 
-    /// <summary>
-    /// Gear wetness levels—used for survival impact or insulation loss.
-    /// </summary>
-    public enum Wetness
-    {
-        Dry,
-        Damp,
-        Soaked
-    }
-
-    /// <summary>
-    /// Item rarity—for loot tables, trade value, or crafting bonuses.
-    /// </summary>
-    public enum Rarity
-    {
-        Common,
-        Uncommon,
-        Rare,
-        Epic,
-        Legendary
-        // Optional: Mythic, Seasonal, Event-based
-    }
-
-    /// <summary>
-    /// Item lifecycle stage—used for dynamic gear or restorative systems.
-    /// </summary>
     public enum DurabilityState
     {
         Depleted,
@@ -156,9 +194,17 @@
         Unused
     }
 
-    /// <summary>
-    /// Disease types for survival mechanics and condition tracking.
-    /// </summary>
+    public enum WetnessLevel
+    {
+        Dry,
+        Damp,
+        Soaked
+    }
+
+    // ────────────────────────────────────────────────────────
+    // 🧬 Disease & Survival Effects
+    // ────────────────────────────────────────────────────────
+
     public enum DiseaseType
     {
         Dehydration,
@@ -166,8 +212,46 @@
         FoodPoisoning,
         Heatstroke,
         Hypothermia,
-        Infection,
+        InfectionStandard,
         Salmonella,
-        ZombieVirus
+        ZombieVirus,
+        Flu,
+        Hayfever,
+        Rabies,
+        Asthma,
+        Malaria
+    }
+
+    // ────────────────────────────────────────────────────────
+    // 🌟 Rarity & Value Systems
+    // ────────────────────────────────────────────────────────
+
+    public enum Rarity
+    {
+        Common,
+        Uncommon,
+        Rare,
+        Epic,
+        Legendary,
+        Mythic,
+        Seasonal,
+        Event
+    }
+
+    // ────────────────────────────────────────────────────────
+    // 🎮 UI & Player Interactions
+    // ────────────────────────────────────────────────────────
+
+    public enum InteractionType
+    {
+        Equip,
+        Use,
+        Consume,
+        Store,
+        Drop,
+        Repair,
+        Examine,
+        Combine
+        // Futureproof: Favorite, Inspect, Tag
     }
 }

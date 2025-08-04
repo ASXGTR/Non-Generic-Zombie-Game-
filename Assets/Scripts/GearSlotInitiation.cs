@@ -1,13 +1,18 @@
-﻿using System.Collections;
+﻿using Game.Inventory;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Inventory;
+using static UnityEditor.Progress;
 
+/// <summary>
+/// Waits for player/inventory setup, then caches gear slot UI and populates them.
+/// </summary>
 public class GearSlotInitiation : MonoBehaviour
 {
     [Header("UI Slot Settings")]
     public Transform slotParent;
-    private List<GearSlotUI> gearSlotUIs = new();
+
+    private readonly List<GearSlotUI> gearSlotUIs = new();
 
     void Start()
     {
@@ -16,31 +21,33 @@ public class GearSlotInitiation : MonoBehaviour
 
     private IEnumerator StartupSequence()
     {
-        int timeoutFrames = 600;
+        const int timeoutFrames = 600;
         int waited = 0;
 
+        // Wait for PlayerStarterSetup to complete
         while (!PlayerStarterSetup.setupComplete && waited < timeoutFrames)
         {
             waited++;
             yield return null;
         }
 
-        Inventory inventory = Object.FindFirstObjectByType<Inventory>();
+        Inventory inventory = null;
 
+        // Wait for Inventory to exist and gear containers to register
         while ((inventory == null || !inventory.hasRegisteredGearContainers) && waited < timeoutFrames)
         {
+            inventory = Object.FindFirstObjectByType<Inventory>();
             waited++;
             yield return null;
-            inventory = Object.FindFirstObjectByType<Inventory>();
         }
 
         if (inventory == null || !inventory.hasRegisteredGearContainers)
         {
-            Debug.LogError("🚫 Slot generation aborted — still no valid gear containers after max wait.");
+            Debug.LogError("🚫 Slot generation aborted — no gear containers after max wait.");
             yield break;
         }
 
-        Debug.Log($"⏳ GearSlotInitiation waited {waited} frames for starter setup.");
+        Debug.Log($"⏳ GearSlotInitiation waited {waited} frames for setup.");
         CacheUISlots();
         PopulateUISlots(inventory);
     }
@@ -55,11 +62,11 @@ public class GearSlotInitiation : MonoBehaviour
             if (slotUI != null)
             {
                 gearSlotUIs.Add(slotUI);
-                Debug.Log($"📦 GearSlotUI found: {child.name}");
+                Debug.Log($"📦 Cached GearSlotUI: {child.name}");
             }
         }
 
-        Debug.Log($"🔍 Total gear slot UIs cached: {gearSlotUIs.Count}");
+        Debug.Log($"🔍 Total GearSlotUI slots cached: {gearSlotUIs.Count}");
     }
 
     private void PopulateUISlots(Inventory inventory)
@@ -78,13 +85,13 @@ public class GearSlotInitiation : MonoBehaviour
 
             if (matchingGear != null && matchingGear.data != null)
             {
-                slotUI.Initialize(matchingGear.data);
-                Debug.Log($"✅ UI initialized for slot: {slotUI.name} → {matchingGear.itemName}");
+                slotUI.Initialize(matchingGear);
+                Debug.Log($"✅ Initialized slot: {slotUI.slotType} → {matchingGear.itemName}");
             }
             else
             {
                 slotUI.ClearSlot();
-                Debug.Log($"❌ No gear found for slot: {slotUI.name}");
+                Debug.Log($"❌ No gear found for slot: {slotUI.slotType}");
             }
         }
     }

@@ -16,7 +16,7 @@ MonoBehaviour:
   itemName: Green Apple
   icon: {fileID: 21300000, guid: 5c4e68cdd1345ad40abfaa0677caa18c, type: 3}
   itemDescription: 
-  itemType: 0
+  itemType: 2
   rarity: 0
   condition: 0
   clothingSlot: 0
@@ -36,17 +36,18 @@ MonoBehaviour:
   cookingRequirements: []
   isHot: 0
   hotDuration: 0
-  maxDurability: 0
+  maxDurability: 100
   isContainer: 0
   containerCapacity: 0
   storageCapacity: 0
   storageSlotCapacity: 0
-  weight: 0
+  weight: 0.1
+  slotFootprint: 1
   tags:
-  - item
   - consumable
   - food
-  - raw
   - fruit
-  equippedSprite: {fileID: 21300000, guid: efcb5c91e00764841a71e0fcfbbc0529, type: 3}
+  - item
+  - raw
+  equippedSprite: {fileID: 21300000, guid: 5c4e68cdd1345ad40abfaa0677caa18c, type: 3}
   clothingPrefab: {fileID: 0}

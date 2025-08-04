@@ -3,26 +3,26 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
+/// <summary>
+/// Controls screen fade transitions between scenes.
+/// </summary>
 public class FadeController : MonoBehaviour
 {
     public static FadeController instance;
 
+    [Header("Fade Settings")]
     public Image fadeOverlay;
     public float fadeDuration = 1f;
 
     private bool globalFadingEnabled = false;
+    private Coroutine currentFade;
 
     void Awake()
     {
-        // ✅ Debug log to check if this is a root GameObject
         if (transform.parent != null)
-        {
-            Debug.LogError("❌ FadeController: SceneTransitionManager is still PARENTED to " + transform.parent.name);
-        }
+            Debug.LogError("[FadeController] Should be root-level, but parented to: " + transform.parent.name);
         else
-        {
-            Debug.Log("✅ FadeController: SceneTransitionManager is a ROOT GameObject.");
-        }
+            Debug.Log("[FadeController] Correctly positioned at scene root.");
 
         if (instance != null && instance != this)
         {
@@ -36,63 +36,64 @@ public class FadeController : MonoBehaviour
 
     void Start()
     {
-        string currentScene = SceneManager.GetActiveScene().name;
-        Debug.Log("📌 FadeController initialized in scene: " + currentScene);
-
-        // ✅ Always enable global fading once
-        EnableGlobalFading();
-
         if (fadeOverlay == null)
         {
-            Debug.LogError("❌ FadeController: fadeOverlay is not assigned in the Inspector!");
+            Debug.LogError("[FadeController] Missing fadeOverlay reference.");
+            return;
         }
 
+        EnableGlobalFading();
         StartCoroutine(FadeIn());
     }
 
     public void StartGameWithFade(string sceneName)
     {
-        Debug.Log("🚨 BUTTON CLICKED — Attempting scene transition.");
-
         if (fadeOverlay == null)
         {
-            Debug.LogError("❌ FadeController: fadeOverlay is null. Did you assign it in the Inspector?");
+            Debug.LogError("[FadeController] Cannot fade — overlay is null.");
             return;
         }
 
-        Debug.Log("✅ StartGameWithFade triggered. Loading scene: " + sceneName);
+        Debug.Log($"[FadeController] Starting fade to scene: {sceneName}");
         StartCoroutine(FadeOutAndLoad(sceneName));
     }
 
     IEnumerator FadeIn()
     {
-        Debug.Log("🌓 FadeIn() coroutine started.");
-
-        float t = fadeDuration;
+        Debug.Log("[FadeController] Begin fade-in.");
         Color c = fadeOverlay.color;
-        while (t > 0)
+        float timer = fadeDuration;
+
+        while (timer > 0f)
         {
-            t -= Time.deltaTime;
-            c.a = Mathf.Clamp01(t / fadeDuration);
+            timer -= Time.deltaTime;
+            c.a = Mathf.Lerp(1f, 0f, 1f - (timer / fadeDuration));
             fadeOverlay.color = c;
             yield return null;
         }
 
-        Debug.Log("✅ FadeIn complete.");
+        c.a = 0f;
+        fadeOverlay.color = c;
+        Debug.Log("[FadeController] Fade-in complete.");
     }
 
     IEnumerator FadeOutAndLoad(string sceneName)
     {
-        float t = 0f;
+        Debug.Log("[FadeController] Begin fade-out.");
         Color c = fadeOverlay.color;
-        while (t < fadeDuration)
+        float timer = 0f;
+
+        while (timer < fadeDuration)
         {
-            t += Time.deltaTime;
-            c.a = Mathf.Clamp01(t / fadeDuration);
+            timer += Time.deltaTime;
+            c.a = Mathf.Lerp(0f, 1f, timer / fadeDuration);
             fadeOverlay.color = c;
             yield return null;
         }
 
+        c.a = 1f;
+        fadeOverlay.color = c;
+        Debug.Log("[FadeController] Fade-out complete. Loading scene...");
         SceneManager.LoadScene(sceneName);
     }
 
@@ -100,23 +101,27 @@ public class FadeController : MonoBehaviour
     {
         if (fadeOverlay != null && globalFadingEnabled)
         {
-            Debug.Log("🎬 Scene loaded: " + scene.name + " — triggering FadeIn()");
+            Debug.Log($"[FadeController] Scene loaded: {scene.name}. Triggering auto fade-in.");
             StartCoroutine(FadeIn());
         }
     }
 
-    private void EnableGlobalFading()
+    void EnableGlobalFading()
     {
         if (!globalFadingEnabled)
         {
             globalFadingEnabled = true;
             SceneManager.sceneLoaded += OnSceneLoaded;
-            Debug.Log("🌍 Global fading enabled for future scenes.");
+            Debug.Log("[FadeController] Global scene fade listening enabled.");
         }
     }
 
-    private void OnDestroy()
+    void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            Debug.Log("[FadeController] Cleaned up fade listener.");
+        }
     }
 }

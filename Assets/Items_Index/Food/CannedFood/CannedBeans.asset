@@ -36,12 +36,13 @@ MonoBehaviour:
   cookingRequirements: []
   isHot: 0
   hotDuration: 0
-  maxDurability: 0
+  maxDurability: 100
   isContainer: 0
   containerCapacity: 0
   storageCapacity: 0
   storageSlotCapacity: 0
-  weight: 0
+  weight: 0.3
+  slotFootprint: 1
   tags: []
   equippedSprite: {fileID: 21300000, guid: efcb5c91e00764841a71e0fcfbbc0529, type: 3}
   clothingPrefab: {fileID: 0}

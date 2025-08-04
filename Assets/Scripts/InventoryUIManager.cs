@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Game.Inventory;
+using System.Collections.Generic;
 using UnityEngine;
-using Game.Inventory;
+using static UnityEditor.Progress;
 
 namespace Game.UI
 {
@@ -17,9 +18,6 @@ namespace Game.UI
 
         private List<GameObject> spawnedStorageSlots = new List<GameObject>();
 
-        /// <summary>
-        /// Opens inventory and storage panels, hides main UI.
-        /// </summary>
         public void OpenInventory()
         {
             if (inventoryPanel == null)
@@ -35,9 +33,6 @@ namespace Game.UI
             Debug.Log("[InventoryUIManager] Inventory and storage panels activated.");
         }
 
-        /// <summary>
-        /// Closes all panels and restores main UI.
-        /// </summary>
         public void CloseInventory()
         {
             inventoryPanel?.SetActive(false);
@@ -49,27 +44,16 @@ namespace Game.UI
             Debug.Log("[InventoryUIManager] Inventory UI closed and cleaned.");
         }
 
-        /// <summary>
-        /// Refresh entire UI – placeholder hook.
-        /// </summary>
         public void RefreshUI()
         {
             Debug.Log("[InventoryUIManager] Inventory UI refreshed.");
-            // Extend with UI rebuild logic if needed
         }
 
-        /// <summary>
-        /// Display a transfer warning message.
-        /// </summary>
         public void ShowTransferError(string message)
         {
             Debug.LogWarning("[InventoryUIManager] Transfer Error: " + message);
-            // You could plug in a UI popup later
         }
 
-        /// <summary>
-        /// Show internal storage contents from a gear item.
-        /// </summary>
         public void ShowStorage(Item containerItem)
         {
             if (containerItem == null)
@@ -96,22 +80,33 @@ namespace Game.UI
 
             foreach (Item item in containerItem.internalStorage)
             {
-                GameObject slotGO = Instantiate(itemSlotPrefab, storageGridParent);
-                ItemSlotUI slotUI = slotGO.GetComponent<ItemSlotUI>();
-                if (slotUI != null)
-                    slotUI.Initialize(item);
-                else
-                    Debug.LogWarning("❌ Missing ItemSlotUI component in prefab.");
-
-                spawnedStorageSlots.Add(slotGO);
+                RenderStorageSlot(item);
             }
 
             Debug.Log($"📦 Showing storage slots for '{containerItem.itemName}' | Items: {containerItem.internalStorage.Count}");
         }
 
-        /// <summary>
-        /// Clear previously spawned UI slots from storage grid.
-        /// </summary>
+        private void RenderStorageSlot(Item item)
+        {
+            if (item == null)
+                return;
+
+            GameObject slotGO = Instantiate(itemSlotPrefab, storageGridParent);
+            if (slotGO == null)
+            {
+                Debug.LogWarning("[InventoryUIManager] Failed to instantiate item slot prefab.");
+                return;
+            }
+
+            ItemSlotUI slotUI = slotGO.GetComponent<ItemSlotUI>();
+            if (slotUI != null)
+                slotUI.Initialize(item);
+            else
+                Debug.LogWarning("[InventoryUIManager] Missing ItemSlotUI component in prefab.");
+
+            spawnedStorageSlots.Add(slotGO);
+        }
+
         private void ClearStorageSlots()
         {
             foreach (GameObject slot in spawnedStorageSlots)

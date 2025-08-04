@@ -3,7 +3,7 @@ using UnityEditor.Callbacks;
 using UnityEngine;
 using Game.Inventory;
 
-public class Editor_ItemDataLabelerAuto : AssetPostprocessor
+public class ItemDataLabelerAutoEditor : AssetPostprocessor
 {
     // This method is called automatically by Unity after assets are imported/created/modified
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
@@ -21,7 +21,7 @@ public class Editor_ItemDataLabelerAuto : AssetPostprocessor
                 labelsList.Add(itemData.itemType.ToString());
 
                 // Add tags as labels, avoid duplicates and empty strings
-                foreach (var tag in itemData.tags)
+                foreach (var tag in itemData.Tags)
                 {
                     if (!string.IsNullOrWhiteSpace(tag) && !labelsList.Contains(tag.Trim()))
                     {
@@ -30,7 +30,7 @@ public class Editor_ItemDataLabelerAuto : AssetPostprocessor
                 }
 
                 AssetDatabase.SetLabels(itemData, labelsList.ToArray());
-                Debug.Log($"[AutoLabeler] Set labels [{string.Join(", ", labelsList)}] for '{itemData.itemName}'");
+                Debug.Log($"[AutoLabeler] Set labels [{string.Join(", ", labelsList)}] for '{itemData.ItemName}'");
 
                 changed = true;
             }
