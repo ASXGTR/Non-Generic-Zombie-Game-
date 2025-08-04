@@ -1,18 +1,20 @@
+#############################
+# Unity Project `.gitignore`
+# Clean public repo setup
+#############################
+
+# ========== Unity folders ==========
 [Libraries]
 Library/
 Temp/
-Logs/
 Obj/
 Build/
 Builds/
+Logs/
 UserSettings/
 MemoryCaptures/
-.vs/
-*.csproj
-*.sln
-*.user
-*.unityproj
-.DS_Store
+
+# ========== Unity generated files ==========
 *.pidb
 *.booproj
 *.svd
@@ -23,7 +25,36 @@ MemoryCaptures/
 *.mdb
 *.opendb
 *.VC.db
+*.unityproj
 *.pidb.meta
+
+# ========== IDE and editor junk ==========
+.vs/
+*.csproj
+*.sln
+*.user
+*.orig
 *.bak
 *.old
-*.orig
+.DS_Store
+Thumbs.db
+
+# ========== OS-specific stuff ==========
+*.exe
+*.apk
+*.unitypackage
+
+# ========== Ignore meta files (optional) ==========
+*.meta
+!Assets/**/*.cs.meta   # keep meta for scripts if needed
+
+# ========== Explicit keep rules ==========
+!Assets/**/*.cs         # Keep all C# scripts
+!Assets/**/*.shader     # Optional: keep shaders
+!Assets/**/*.asmdef     # Optional: keep assembly definitions
+!Assets/**/*.json       # Optional: config files
+
+# ========== Misc cleanup ==========
+# Ignore empty folders left by Unity
+**/.DS_Store
+**/Thumbs.db

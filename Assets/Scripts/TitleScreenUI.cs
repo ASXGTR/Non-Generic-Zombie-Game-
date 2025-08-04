@@ -2,91 +2,112 @@
 using UnityEngine.SceneManagement;
 using TMPro;
 
+/// <summary>
+/// Handles title screen buttons and transitions.
+/// </summary>
 public class TitleScreenUI : MonoBehaviour
 {
     [Header("Scene Settings")]
-    public string gameSceneName = "MainScene";
+    [SerializeField] private string gameSceneName = "MainScene";
 
     [Header("Title Screen UI")]
-    public GameObject gameTitle;
-    public GameObject newGameButton;
-    public GameObject creditsButton;
+    [SerializeField] private GameObject gameTitle;
+    [SerializeField] private GameObject newGameButton;
+    [SerializeField] private GameObject creditsButton;
 
     [Header("Credits UI")]
-    public GameObject creditsText;
-    public GameObject creditsPanel;
-    public GameObject returnButton;
-    public GameObject creditsTextOverlay; // ✅ Separate overlay that stays visible
+    [SerializeField] private GameObject creditsText;
+    [SerializeField] private GameObject creditsPanel;
+    [SerializeField] private GameObject returnButton;
+    [SerializeField] private GameObject creditsTextOverlay; // ✅ persistent overlay
 
     [Header("Audio")]
-    public AudioSource backgroundMusic;
+    [SerializeField] private AudioSource backgroundMusic;
 
     private TMP_Text creditsButtonText;
+    private const string logTag = "[TitleScreenUI]";
 
-    void Start()
+    private void Start()
     {
-        // Cache TMP_Text reference
         if (creditsButton != null)
             creditsButtonText = creditsButton.GetComponentInChildren<TMP_Text>(true);
 
         InitializeUIState();
     }
 
-    public void StartGame()
+    /// <summary>
+    /// Starts the game and transitions scene.
+    /// </summary>
+    [ContextMenu("▶ Start Game")]
+    private void StartGame()
     {
-        Debug.Log("🎮 Starting game...");
+        Debug.Log($"{logTag} 🎮 Starting game...");
 
         if (backgroundMusic != null)
-            StartCoroutine(FadeOutMusic(3.5f)); // Matches UI fade time
+            StartCoroutine(FadeOutMusic(3.5f));
 
-        SceneManager.LoadScene(gameSceneName);
+        if (!string.IsNullOrEmpty(gameSceneName))
+            SceneManager.LoadScene(gameSceneName);
+        else
+            Debug.LogError($"{logTag} ❌ Scene name is empty.");
     }
 
+    /// <summary>
+    /// Quits the game from title screen.
+    /// </summary>
     public void QuitGame()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-        Debug.Log("🛑 Quit (Editor)");
+        Debug.Log($"{logTag} 🛑 Quit (Editor)");
 #else
         Application.Quit();
-        Debug.Log("🛑 Quit (Build)");
+        Debug.Log($"{logTag} 🛑 Quit (Build)");
 #endif
     }
 
+    /// <summary>
+    /// Shows credits panel.
+    /// </summary>
     public void ShowCredits()
     {
-        gameTitle?.SetActive(false);
-        newGameButton?.SetActive(false);
-        creditsButton?.SetActive(false);
+        if (gameTitle != null) gameTitle.SetActive(false);
+        if (newGameButton != null) newGameButton.SetActive(false);
+        if (creditsButton != null) creditsButton.SetActive(false);
 
-        creditsText?.SetActive(true);
-        creditsPanel?.SetActive(true);
-        returnButton?.SetActive(true);
+        if (creditsText != null) creditsText.SetActive(true);
+        if (creditsPanel != null) creditsPanel.SetActive(true);
+        if (returnButton != null) returnButton.SetActive(true);
+        if (creditsTextOverlay != null) creditsTextOverlay.SetActive(true);
 
-        // ✅ Make sure overlay remains untouched here
-        Debug.Log("📜 Credits shown");
+        Debug.Log($"{logTag} 📜 Credits shown.");
     }
 
+    /// <summary>
+    /// Returns to the main title UI.
+    /// </summary>
     public void ReturnToTitle()
     {
-        creditsText?.SetActive(false);
-        creditsPanel?.SetActive(false);
-        returnButton?.SetActive(false);
+        if (creditsText != null) creditsText.SetActive(false);
+        if (creditsPanel != null) creditsPanel.SetActive(false);
+        if (returnButton != null) returnButton.SetActive(false);
 
         ShowTitleUI();
 
-        Debug.Log("🏠 Returned to title");
+        Debug.Log($"{logTag} 🏠 Returned to title.");
     }
 
+    /// <summary>
+    /// Displays title buttons and logo.
+    /// </summary>
     private void ShowTitleUI()
     {
-        gameTitle?.SetActive(true);
-        newGameButton?.SetActive(true);
+        if (gameTitle != null) gameTitle.SetActive(true);
+        if (newGameButton != null) newGameButton.SetActive(true);
 
         if (creditsButton != null)
         {
             creditsButton.SetActive(true);
-
             if (creditsButtonText != null)
             {
                 creditsButtonText.text = "Credits";
@@ -95,24 +116,27 @@ public class TitleScreenUI : MonoBehaviour
             }
         }
 
-        // ✅ Ensure creditsTextOverlay always stays active
         if (creditsTextOverlay != null)
             creditsTextOverlay.SetActive(true);
     }
 
+    /// <summary>
+    /// Initializes title screen state on game launch.
+    /// </summary>
     private void InitializeUIState()
     {
         ShowTitleUI();
 
-        creditsText?.SetActive(false);
-        creditsPanel?.SetActive(false);
-        returnButton?.SetActive(false);
-
-        // ✅ Always ensure overlay is visible on load
+        if (creditsText != null) creditsText.SetActive(false);
+        if (creditsPanel != null) creditsPanel.SetActive(false);
+        if (returnButton != null) returnButton.SetActive(false);
         if (creditsTextOverlay != null)
             creditsTextOverlay.SetActive(true);
     }
 
+    /// <summary>
+    /// Fades out background music.
+    /// </summary>
     private System.Collections.IEnumerator FadeOutMusic(float duration)
     {
         if (backgroundMusic == null || !backgroundMusic.isPlaying)
@@ -129,6 +153,6 @@ public class TitleScreenUI : MonoBehaviour
         }
 
         backgroundMusic.Stop();
-        backgroundMusic.volume = startVolume; // Reset volume for future use
+        backgroundMusic.volume = startVolume;
     }
 }

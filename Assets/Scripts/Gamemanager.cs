@@ -1,13 +1,14 @@
-﻿using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+﻿using Game.Stats;
 using System.Text.RegularExpressions;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public TMP_Text storyText;
-    public Button[] choiceButtons; // Ensure array has 4+ buttons assigned
+    public Button[] choiceButtons;
     public PlayerStats playerStats;
     public HUDManager hudManager;
 
@@ -88,10 +89,8 @@ public class GameManager : MonoBehaviour
                 int index = i;
                 choiceButtons[i].onClick.AddListener(() =>
                 {
-                    // Apply stat effects
                     playerStats.ApplyEffects(currentNode.choices[index].effects);
 
-                    // Debug: Confirm HUDManager reference status
                     Debug.Log("📢 HUDManager is " + (hudManager != null ? "linked ✅" : "missing ❌"));
 
                     if (hudManager != null)
@@ -110,7 +109,7 @@ public class GameManager : MonoBehaviour
                     LoadNode(currentNode.choices[index].nextNode);
                 });
             }
-            else if (i == 3) // Always show camp option on 4th button
+            else if (i == 3)
             {
                 choiceButtons[i].gameObject.SetActive(true);
                 choiceButtons[i].GetComponentInChildren<TMP_Text>().text = "Make Camp Here";

@@ -1,146 +1,165 @@
-﻿using System.Collections.Generic;
+﻿// Game.UI.CampInventoryUIManager.cs
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Game.Inventory;
 using Game.UI;
 
-public class CampInventoryUIManager : MonoBehaviour
+namespace Game.UI
 {
-    [Header("UI References")]
-    public GameObject inventoryUI;
-    public GameObject blackoutOverlay;
-    public GameObject itemSlotPrefab;
-    public Transform itemGridParent;
-    public Inventory playerInventory;
-    public GameObject toggleInventoryButton;
-    public GameObject playerHUD;
-    public GameObject HUDCanvas;
-    public GameObject campCanvas;
-
-    [Header("Settings")]
-    public KeyCode toggleKey = KeyCode.I;
-    public bool allowInventory = true;
-
-    private bool isOpen = false;
-    private List<GameObject> spawnedSlots = new List<GameObject>();
-
-    void Start()
+    public class CampInventoryUIManager : MonoBehaviour
     {
-        if (inventoryUI == null)
-            Debug.LogError("❌ InventoryUI is not assigned.");
-        if (blackoutOverlay == null)
-            Debug.LogError("❌ BlackoutOverlay is not assigned.");
-        if (playerInventory == null)
-            Debug.LogError("❌ PlayerInventory reference is missing!");
-        if (campCanvas == null)
-            Debug.LogWarning("⚠️ Camp canvas reference is missing from CampInventoryUIManager.");
-        if (HUDCanvas == null)
-            Debug.LogWarning("⚠️ HUDCanvas reference is missing from CampInventoryUIManager.");
+        [Header("UI References")]
+        public GameObject inventoryUI;
+        public GameObject blackoutOverlay;
+        public GameObject itemSlotPrefab;
+        public Transform itemGridParent;
+        public Game.Inventory.Inventory playerInventory; // 🔧 Fully qualified type to disambiguate
+        public GameObject toggleInventoryButton;
+        public GameObject playerHUD;
+        public GameObject HUDCanvas;
+        public GameObject campCanvas;
 
-        inventoryUI?.SetActive(false);
-        blackoutOverlay?.SetActive(false);
-        toggleInventoryButton?.SetActive(true);
-    }
+        [Header("Settings")]
+        public KeyCode toggleKey = KeyCode.I;
+        public bool allowInventory = true;
 
-    void Update()
-    {
-        if (!allowInventory || inventoryUI == null)
-            return;
+        private bool isOpen = false;
+        private readonly List<GameObject> spawnedSlots = new();
 
-        if (Input.GetKeyDown(toggleKey))
+        void Start()
         {
-            if (!isOpen)
-                OpenInventory();
-            else
-                CloseInventory();
-        }
-    }
+            if (inventoryUI == null)
+                Debug.LogError("❌ InventoryUI is not assigned.");
+            if (blackoutOverlay == null)
+                Debug.LogError("❌ BlackoutOverlay is not assigned.");
+            if (playerInventory == null)
+                Debug.LogError("❌ PlayerInventory reference is missing!");
+            if (campCanvas == null)
+                Debug.LogWarning("⚠️ Camp canvas reference is missing.");
+            if (HUDCanvas == null)
+                Debug.LogWarning("⚠️ HUDCanvas reference is missing.");
 
-    public void OpenInventory()
-    {
-        if (!inventoryUI)
-            return;
-
-        isOpen = true;
-        inventoryUI.SetActive(true);
-        blackoutOverlay?.SetActive(true);
-        toggleInventoryButton?.SetActive(false);
-
-        campCanvas?.SetActive(false);
-
-        if (HUDCanvas != null)
-        {
-            HUDCanvas.SetActive(true);
-            Debug.Log("📺 HUDCanvas enabled during inventory open.");
+            if (inventoryUI != null)
+                inventoryUI.SetActive(false);
+            if (blackoutOverlay != null)
+                blackoutOverlay.SetActive(false);
+            if (toggleInventoryButton != null)
+                toggleInventoryButton.SetActive(true);
         }
 
-        if (playerHUD != null)
+        void Update()
         {
-            playerHUD.SetActive(true);
-            Debug.Log("📺 playerHUD enabled during inventory open.");
+            if (!allowInventory || inventoryUI == null)
+                return;
+
+            if (Input.GetKeyDown(toggleKey))
+            {
+                if (!isOpen)
+                    OpenInventory();
+                else
+                    CloseInventory();
+            }
         }
 
-        RefreshInventoryUI();
-
-        Debug.Log("📦 Camp inventory opened.");
-    }
-
-    public void CloseInventory()
-    {
-        if (!inventoryUI)
+        public void OpenInventory()
         {
-            Debug.LogWarning("⚠️ inventoryUI is null!");
-            return;
+            if (inventoryUI == null)
+                return;
+
+            isOpen = true;
+            inventoryUI.SetActive(true);
+
+            if (blackoutOverlay != null)
+                blackoutOverlay.SetActive(true);
+            if (toggleInventoryButton != null)
+                toggleInventoryButton.SetActive(false);
+            if (campCanvas != null)
+                campCanvas.SetActive(false);
+            if (HUDCanvas != null)
+            {
+                HUDCanvas.SetActive(true);
+                Debug.Log("📺 HUDCanvas enabled during inventory open.");
+            }
+            if (playerHUD != null)
+            {
+                playerHUD.SetActive(true);
+                Debug.Log("📺 playerHUD enabled during inventory open.");
+            }
+
+            RefreshInventoryUI();
+            Debug.Log("📦 Camp inventory opened.");
         }
 
-        isOpen = false;
-        inventoryUI.SetActive(false);
-        blackoutOverlay?.SetActive(false);
-        toggleInventoryButton?.SetActive(true);
-
-        campCanvas?.SetActive(true);
-
-        Debug.Log("📦 Camp inventory closed.");
-        ClearInventoryUI();
-    }
-
-    void RefreshInventoryUI()
-    {
-        ClearInventoryUI();
-
-        if (playerInventory == null)
+        public void CloseInventory()
         {
-            Debug.LogWarning("⚠️ No playerInventory assigned.");
-            return;
+            if (inventoryUI == null)
+            {
+                Debug.LogWarning("⚠️ inventoryUI is null!");
+                return;
+            }
+
+            isOpen = false;
+            inventoryUI.SetActive(false);
+
+            if (blackoutOverlay != null)
+                blackoutOverlay.SetActive(false);
+            if (toggleInventoryButton != null)
+                toggleInventoryButton.SetActive(true);
+            if (campCanvas != null)
+                campCanvas.SetActive(true);
+
+            Debug.Log("📦 Camp inventory closed.");
+            ClearInventoryUI();
         }
 
-        List<Item> displayItems = playerInventory.GetAllItems();
-
-        if (displayItems.Count == 0)
+        void RefreshInventoryUI()
         {
-            Debug.Log("👜 No items found to display.");
-            return;
+            ClearInventoryUI();
+
+            if (playerInventory == null)
+            {
+                Debug.LogWarning("⚠️ No playerInventory assigned.");
+                return;
+            }
+
+            List<InventoryItem> displayItems = playerInventory.GetAllItems();
+
+            if (displayItems == null || displayItems.Count == 0)
+            {
+                Debug.Log("👜 No items found to display.");
+                return;
+            }
+
+            foreach (InventoryItem item in displayItems)
+            {
+                if (item == null) continue;
+
+                GameObject slotGO = Instantiate(itemSlotPrefab, itemGridParent);
+                if (slotGO == null)
+                {
+                    Debug.LogWarning("❌ Failed to instantiate item slot prefab.");
+                    continue;
+                }
+
+                ItemSlotUI slotUI = slotGO.GetComponent<ItemSlotUI>();
+                if (slotUI != null)
+                    slotUI.SetSlot(item);
+                else
+                    Debug.LogWarning("❌ Missing ItemSlotUI component on instantiated slot prefab.");
+
+                spawnedSlots.Add(slotGO);
+            }
         }
 
-        foreach (Item item in displayItems)
+        void ClearInventoryUI()
         {
-            GameObject slotGO = Instantiate(itemSlotPrefab, itemGridParent);
-            ItemSlotUI slotUI = slotGO.GetComponent<ItemSlotUI>();
-            if (slotUI != null)
-                slotUI.Initialize(item);
-            else
-                Debug.LogWarning("❌ Missing ItemSlotUI component on instantiated slot prefab.");
-            spawnedSlots.Add(slotGO);
-        }
-    }
+            foreach (var go in spawnedSlots)
+            {
+                if (go != null)
+                    Destroy(go);
+            }
 
-    void ClearInventoryUI()
-    {
-        foreach (var go in spawnedSlots)
-        {
-            if (go != null)
-                Destroy(go);
+            spawnedSlots.Clear();
         }
-        spawnedSlots.Clear();
     }
 }

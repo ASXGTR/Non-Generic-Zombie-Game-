@@ -1,114 +1,72 @@
-﻿using UnityEngine;
-using Game.Inventory;
-using Game.UI;
+﻿using Game.Inventory;
 using System.Collections.Generic;
+using UnityEngine;
+using static UnityEditor.Progress;
 
+/// <summary>
+/// Sets up the player's starting inventory on game start or manually via inspector.
+/// </summary>
 public class PlayerStarterSetup : MonoBehaviour
 {
-    [Header("Starter Clothing")]
-    public ItemData starterJeans;
-    public ItemData starterTShirt;
-
     [Header("Starter Items")]
-    public ItemData glowstickItem;
+    [SerializeField] private List<ItemData> starterItems;
 
-    [Header("UI")]
-    public GameObject itemSlotPrefab;
-    public Transform slotGridParent;
+    [Header("Player Inventory")]
+    [SerializeField] private Inventory playerInventory;
 
-    private Inventory playerInventory;
+    private const string logTag = "[PlayerStarterSetup]";
 
-    public static bool setupComplete = false;
-
-    void Start()
+    private void Start()
     {
-        playerInventory = Object.FindFirstObjectByType<Game.Inventory.Inventory>();
+        ApplyStarterItems();
+    }
 
+    /// <summary>
+    /// Adds tagged "starter" items to the player's inventory.
+    /// </summary>
+    [ContextMenu("Add Starter Items")]
+    public void ApplyStarterItems()
+    {
         if (playerInventory == null)
         {
-            Debug.LogError("❌ No Inventory found for PlayerStarterSetup.");
-            setupComplete = true;
+            Debug.LogWarning($"{logTag} No inventory assigned.");
             return;
         }
 
-        EquipStarterClothing();
-        AddInitialItemToStorage();
-        GenerateInitialStorageSlots();
-
-        Debug.Log("🎮 Player starter setup complete.");
-        setupComplete = true;
-    }
-
-    void EquipStarterClothing()
-    {
-        EquipSingleClothing(starterJeans, "👖");
-        EquipSingleClothing(starterTShirt, "👕");
-
-        foreach (var gear in playerInventory.GetEquippedGear())
+        if (starterItems == null || starterItems.Count == 0)
         {
-            Debug.Log($"[StartupCheck] Gear: {gear.itemName} | Equipped: {gear.isEquipped} | Capacity: {gear.storageCapacity} | HasStorage: {(gear.internalStorage != null ? "✅" : "❌")}");
-        }
-    }
-
-    void EquipSingleClothing(ItemData clothingData, string emoji)
-    {
-        if (clothingData == null) return;
-
-        Item clothingItem = new Item(clothingData);
-
-        if (!playerInventory.ownedItems.Contains(clothingItem))
-            playerInventory.ownedItems.Add(clothingItem);
-
-        playerInventory.EquipItem(clothingItem);
-
-        if (clothingItem.storageCapacity > 0 && clothingItem.internalStorage == null)
-        {
-            clothingItem.internalStorage = new List<Item>();
-            Debug.Log($"📦 Initialized storage for {clothingItem.itemName} | Capacity: {clothingItem.storageCapacity}");
-        }
-
-        Debug.Log($"{emoji} Equipped: {clothingData.itemName}");
-    }
-
-    void AddInitialItemToStorage()
-    {
-        if (glowstickItem == null) return;
-
-        Item starterItem = new Item(glowstickItem);
-        playerInventory.AddItem(starterItem);
-        Debug.Log($"📦 Added starter item: {glowstickItem.itemName}");
-    }
-
-    void GenerateInitialStorageSlots()
-    {
-        if (slotGridParent == null)
-        {
-            Debug.LogError("🚫 SlotGridParent not assigned.");
+            Debug.LogWarning($"{logTag} No starter items defined.");
             return;
         }
 
-        int totalSlots = 0;
+        int added = 0;
+        int skipped = 0;
 
-        List<Item> allEquipped = playerInventory.GetEquippedGear();
-        foreach (Item gear in allEquipped)
+        foreach (ItemData itemData in starterItems)
         {
-            if (gear?.internalStorage != null)
-                totalSlots += gear.internalStorage.Count;
-        }
+            if (itemData == null)
+            {
+                Debug.LogWarning($"{logTag} Null ItemData reference in starter list.");
+                continue;
+            }
 
-        if (totalSlots < 16) totalSlots = 16;
+            string name = itemData.ItemName ?? "(Unnamed)";
+            List<string> tags = itemData.Tags;
 
-        for (int i = 0; i < totalSlots; i++)
-        {
-            GameObject slotGO = Instantiate(itemSlotPrefab, slotGridParent);
-            ItemSlotUI slotUI = slotGO.GetComponent<ItemSlotUI>();
-
-            if (slotUI != null)
-                slotUI.Initialize(null);
+            if (tags != null && tags.Contains("starter"))
+            {
+                var newItem = new Item(itemData); // Assumes constructor signature
+                playerInventory.AddItem(newItem);
+                Debug.Log($"{logTag} ➕ Added starter item: {name}");
+                added++;
+            }
             else
-                Debug.LogWarning("⚠️ ItemSlotUI missing on prefab.");
+            {
+                Debug.Log($"{logTag} ⚠️ Skipped non-starter item: {name}");
+                skipped++;
+            }
         }
 
-        Debug.Log($"🔧 Generated {totalSlots} starter inventory slots.");
+        Debug.Log($"{logTag} Summary — Added: {added}, Skipped: {skipped}");
     }
 }

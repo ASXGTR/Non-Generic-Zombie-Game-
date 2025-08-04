@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 namespace Game.Inventory.EditorTools
 {
@@ -15,10 +17,10 @@ namespace Game.Inventory.EditorTools
 
         private void OnGUI()
         {
-            GUILayout.Label("Validate ItemData Assets", EditorStyles.boldLabel);
+            GUILayout.Label("🧼 Validate & Repair ItemData Assets", EditorStyles.boldLabel);
             fallbackSprite = (Sprite)EditorGUILayout.ObjectField("Fallback Sprite", fallbackSprite, typeof(Sprite), false);
 
-            if (GUILayout.Button("Scan & Fix Missing Icons"))
+            if (GUILayout.Button("🧹 Scan & Fix ItemData Assets"))
             {
                 ValidateAllItemData();
             }
@@ -28,6 +30,9 @@ namespace Game.Inventory.EditorTools
         {
             string[] assetGUIDs = AssetDatabase.FindAssets("t:ItemData");
             int globalFixCount = 0;
+            int iconFixedCount = 0;
+            int equippedFixedCount = 0;
+            int fallbackUsed = 0;
 
             foreach (string guid in assetGUIDs)
             {
@@ -39,30 +44,76 @@ namespace Game.Inventory.EditorTools
                 bool needsFix = false;
                 SerializedObject serializedItem = new SerializedObject(item);
 
-                // Icon check
                 var iconProp = serializedItem.FindProperty("icon");
+                var equippedProp = serializedItem.FindProperty("equippedSprite");
+                var nameProp = serializedItem.FindProperty("itemName");
+                var idProp = serializedItem.FindProperty("id");
+
+                // 🧠 Validate icon
                 if (iconProp != null && iconProp.objectReferenceValue == null)
                 {
-                    Debug.LogWarning($"❌ [Missing Icon] {item.name} — 'icon' field not assigned. Asset path: {path}", item);
-                    if (fallbackSprite != null)
+                    if (equippedProp != null && equippedProp.objectReferenceValue != null)
+                    {
+                        iconProp.objectReferenceValue = equippedProp.objectReferenceValue;
+                        Debug.Log($"🛠️ [Icon Restored] {item.name} used equippedSprite as icon.");
+                        iconFixedCount++;
+                    }
+                    else if (fallbackSprite != null)
                     {
                         iconProp.objectReferenceValue = fallbackSprite;
-                        needsFix = true;
+                        Debug.Log($"🛠️ [Fallback Icon] {item.name} assigned fallback sprite.");
+                        iconFixedCount++;
+                        fallbackUsed++;
                     }
+                    else
+                    {
+                        Debug.LogWarning($"❌ [Missing Icon] {item.name} has no sprite reference!");
+                    }
+                    needsFix = true;
                 }
 
-                // EquippedSprite check
-                var equippedProp = serializedItem.FindProperty("equippedSprite");
+                // 🧠 Validate equippedSprite
                 if (equippedProp != null && equippedProp.objectReferenceValue == null)
                 {
-                    Debug.LogWarning($"⚠️ [Missing EquippedSprite] {item.name} — 'equippedSprite' field not assigned. Asset path: {path}", item);
                     if (fallbackSprite != null)
                     {
                         equippedProp.objectReferenceValue = fallbackSprite;
+                        Debug.Log($"🛠️ [Fallback EquippedSprite] {item.name} assigned fallback.");
+                        equippedFixedCount++;
+                        fallbackUsed++;
                         needsFix = true;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"⚠️ [Missing EquippedSprite] {item.name} has no equipped visual.");
                     }
                 }
 
+                // 🔍 Validate core string fields
+                if (string.IsNullOrWhiteSpace(item.ItemName))
+                {
+                    Debug.LogWarning($"⚠️ [Missing ItemName] {item.name} — Name field empty.");
+                }
+                if (string.IsNullOrWhiteSpace(item.Id))
+                {
+                    Debug.LogWarning($"⚠️ [Missing ID] {item.name} — ID field empty.");
+                }
+
+                // 🏷️ Validate tags
+                if (item.Tags == null || item.Tags.Count == 0)
+                {
+                    Debug.LogWarning($"📛 [No Tags] {item.name} has no tags assigned.");
+                }
+                else
+                {
+                    var duplicates = item.Tags.GroupBy(t => t).Where(g => g.Count() > 1).Select(g => g.Key);
+                    foreach (string dup in duplicates)
+                    {
+                        Debug.LogWarning($"🔁 [Duplicate Tag] {item.name} has duplicate tag: '{dup}'");
+                    }
+                }
+
+                // 💾 Apply fixes
                 if (needsFix)
                 {
                     serializedItem.ApplyModifiedProperties();
@@ -72,7 +123,13 @@ namespace Game.Inventory.EditorTools
             }
 
             AssetDatabase.SaveAssets();
-            Debug.Log($"✅ Scan complete. {globalFixCount} item(s) auto-fixed.");
+
+            Debug.Log($"✅ Validation complete!\n" +
+                      $"🔍 Scanned: {assetGUIDs.Length} items\n" +
+                      $"🛠️ Fixed: {globalFixCount} assets\n" +
+                      $"🖼️ Icons repaired: {iconFixedCount}\n" +
+                      $"👕 EquippedSprites repaired: {equippedFixedCount}\n" +
+                      $"📦 Fallbacks used: {fallbackUsed}");
         }
     }
 }

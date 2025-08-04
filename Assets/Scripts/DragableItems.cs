@@ -3,15 +3,23 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Game.Inventory;
 
+/// <summary>
+/// Represents a UI item that can be dragged between slots or containers.
+/// </summary>
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [Tooltip("Type of item, e.g. 'Helmet', 'Weapon'")]
     public string itemType;
 
+    [Header("UI References")]
     public Image icon;
 
-    // 🆕 Runtime reference to the actual item this UI represents
-    public Item item;
+    [Header("Drag Settings")]
+    public float dragScale = 1.1f;
+
+    // Runtime references
+    public InventoryItem item;
+    public InventorySlot originSlot; // ✅ Useful for drag validation
 
     private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
@@ -27,16 +35,22 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         if (rectTransform == null)
             Debug.LogWarning("[DraggableItem] Missing RectTransform component!");
+
+        if (icon == null)
+            Debug.LogWarning("[DraggableItem] Icon Image reference is missing.");
     }
 
-    // 🆕 Call this when spawning the draggable item
-    public void Initialize(Item sourceItem)
+    /// <summary>
+    /// Initializes the draggable item's visuals and data.
+    /// </summary>
+    public void Initialize(InventoryItem sourceItem, InventorySlot slotContext = null)
     {
         item = sourceItem;
+        originSlot = slotContext;
 
         if (item != null && item.data != null)
         {
-            itemType = item.data.clothingSlot.ToString(); // Optional: still helpful for legacy logic
+            itemType = item.data.clothingSlot.ToString(); // Optional legacy usage
             icon.sprite = item.data.Icon;
             icon.enabled = true;
         }
@@ -51,10 +65,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         originalParent = transform.parent;
-        transform.SetParent(transform.root); // Bring to front
+        transform.SetParent(transform.root); // Move to top of canvas
+        transform.localScale = Vector3.one * dragScale;
 
         if (canvasGroup != null)
             canvasGroup.blocksRaycasts = false;
+
+        // TODO: Add tooltip hiding, drop zone highlight, etc.
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -66,11 +83,31 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnEndDrag(PointerEventData eventData)
     {
         transform.SetParent(originalParent);
-
-        if (rectTransform != null)
-            rectTransform.localPosition = Vector3.zero;
+        transform.localPosition = Vector3.zero;
+        transform.localScale = Vector3.one;
 
         if (canvasGroup != null)
             canvasGroup.blocksRaycasts = true;
+
+        // TODO: Handle drop target validation & audio feedback
+    }
+
+    /// <summary>
+    /// Clears visuals and resets references (for pooling).
+    /// </summary>
+    public void ResetVisual()
+    {
+        item = null;
+        originSlot = null;
+        itemType = "Unknown";
+
+        if (icon != null)
+        {
+            icon.sprite = null;
+            icon.enabled = false;
+        }
+
+        transform.localScale = Vector3.one;
+        transform.localPosition = Vector3.zero;
     }
 }

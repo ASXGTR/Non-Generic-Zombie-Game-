@@ -1,46 +1,87 @@
-﻿using System.Collections.Generic;
+﻿// DiseaseManager.cs
+using DiseaseSystem;
+using Game.Inventory;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using Game.Inventory; // ✅ This is the key import for DiseaseType
 
 public class DiseaseManager : MonoBehaviour
 {
-    public List<DiseaseProgress> activeDiseases = new();
+    public List<DiseaseInstance> activeDiseases = new();
+    public DiseaseDatabase diseaseDatabase;
 
-    public void TryContractDisease(DiseaseType type, float currentSickness)
+    public static event System.Action<DiseaseType> OnDiseaseContracted;
+    public static event System.Action<DiseaseType> OnDiseaseCured;
+    public static event System.Action<DiseaseType, float> OnDiseaseProgressed;
+
+    public void TryContractDisease(DiseaseType type, float sicknessResistance)
     {
-        float immunity = GetImmunityChance(currentSickness);
-        float baseChance = GetBaseChance(type); // You can switch-case or use SO
-        float finalChance = baseChance * (1f - immunity);
+        if (HasDisease(type)) return;
+
+        DiseaseConfig config = diseaseDatabase.GetConfig(type);
+        if (config == null)
+        {
+            Debug.LogWarning($"🚫 No config found for disease type: {type}");
+            return;
+        }
+
+        float immunity = GetImmunityChance(sicknessResistance);
+        float finalChance = config.infectionChance * (1f - immunity);
 
         if (Random.value < finalChance)
             ApplyDisease(type);
     }
 
-    float GetImmunityChance(float sicknessValue)
+    bool HasDisease(DiseaseType type) =>
+        activeDiseases.Any(d => d.diseaseType == type && !d.isCured);
+
+    float GetImmunityChance(float resistanceValue)
     {
-        float normalized = Mathf.Clamp01(sicknessValue / 100f);
-        return Mathf.Lerp(0.75f, 0f, normalized); // 0 sickness = 75% immune
+        float normalized = Mathf.Clamp01(resistanceValue / 100f);
+        return Mathf.Lerp(0.75f, 0f, normalized);
     }
 
     void ApplyDisease(DiseaseType type)
     {
-        activeDiseases.Add(new DiseaseProgress(type));
-        // Trigger effects, symptoms, UI updates...
+        var newInstance = new DiseaseInstance(type);
+        activeDiseases.Add(newInstance);
+        OnDiseaseContracted?.Invoke(type);
+        Debug.Log($"🦠 Contracted disease: {type}");
     }
 
-    float GetBaseChance(DiseaseType type)
+    public void UpdateDiseases(float elapsedTime, float progressionRate = 0.01f)
     {
-        return type switch
+        foreach (var disease in activeDiseases.Where(d => !d.isCured))
         {
-            DiseaseType.Salmonella => 0.2f,
-            DiseaseType.ZombieVirus => 0.05f,
-            DiseaseType.Hypothermia => 0.15f,
-            DiseaseType.Dehydration => 0.3f,
-            DiseaseType.FatigueSyndrome => 0.25f,
-            DiseaseType.Infection => 0.35f,
-            DiseaseType.FoodPoisoning => 0.2f,
-            DiseaseType.Heatstroke => 0.2f,
-            _ => 0.1f
-        };
+            float prevSeverity = disease.severity;
+            disease.UpdateDisease(elapsedTime, progressionRate);
+
+            if (disease.severity != prevSeverity)
+                OnDiseaseProgressed?.Invoke(disease.diseaseType, disease.severity);
+        }
     }
+
+    public bool TryCureDisease(DiseaseType type, string itemId)
+    {
+        var instance = activeDiseases.FirstOrDefault(d => d.diseaseType == type);
+        if (instance == null || instance.isCured) return false;
+
+        DiseaseConfig config = diseaseDatabase.GetConfig(type);
+        if (config == null) return false;
+
+        if (instance.TryCure(itemId, config))
+        {
+            OnDiseaseCured?.Invoke(type);
+            Debug.Log($"✅ Cured disease: {type} using item: {itemId}");
+            return true;
+        }
+
+        return false;
+    }
+
+    public List<string> GetDiseaseStatusSummaries() =>
+        activeDiseases.Select(d => d.GetStatus()).ToList();
+
+    public List<DiseaseType> GetActiveDiseaseTypes() =>
+        activeDiseases.Where(d => !d.isCured).Select(d => d.diseaseType).ToList();
 }

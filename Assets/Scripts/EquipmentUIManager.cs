@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
+/// <summary>
+/// Manages equipment UI buttons and icon visuals based on inventory slots.
+/// </summary>
 public class EquipmentUIManager : MonoBehaviour
 {
     [System.Serializable]
@@ -14,7 +18,7 @@ public class EquipmentUIManager : MonoBehaviour
     }
 
     [Header("Equipment Slots")]
-    public List<SlotReference> equipmentSlots = new List<SlotReference>();
+    public List<SlotReference> equipmentSlots = new();
 
     [Header("Default Icon")]
     public Sprite defaultIcon;
@@ -24,100 +28,120 @@ public class EquipmentUIManager : MonoBehaviour
     void Start()
     {
         inventory = FindFirstObjectByType<Inventory>();
-
         if (inventory == null)
         {
-            Debug.LogError("❌ EquipmentUIManager: No Inventory found in scene.");
+            Debug.LogError("[EquipmentUIManager] Inventory not found.");
             return;
         }
 
-        FindAndRegisterSlotButtons();
-
-        foreach (var gear in inventory.GetEquippedGear())
-        {
-            if (gear?.data == null) continue;
-            Debug.Log($"🧠 EQUIPPED ON LOAD: {gear.data.itemName}, IsContainer: {gear.data.isContainer}, Capacity: {gear.data.storageCapacity}");
-        }
-
-        InitializeStorageSlots();
+        RegisterSlotButtons();
+        SyncIconsFromEquippedItems();
+        InitializeStoragePanels();
     }
 
-    void FindAndRegisterSlotButtons()
+    void RegisterSlotButtons()
     {
         foreach (SlotReference slot in equipmentSlots)
         {
-            string buttonName = "Slot_" + slot.slotName;
+            string buttonObjectName = "Slot_" + slot.slotName;
+            GameObject found = GameObject.Find(buttonObjectName);
 
-            GameObject found = GameObject.Find(buttonName);
             if (found == null)
             {
-                Debug.LogWarning("⚠️ Could not find button: " + buttonName);
+                Debug.LogWarning($"[EquipmentUIManager] Slot button '{buttonObjectName}' not found.");
                 continue;
             }
 
             slot.slotButton = found.GetComponent<Button>();
             if (slot.slotButton != null)
             {
-                string slotCopy = slot.slotName;
-                slot.slotButton.onClick.AddListener(() => OnSlotClicked(slotCopy));
-                Debug.Log($"🔗 Linked: {slot.slotName} slot button.");
+                string capturedSlot = slot.slotName;
+                slot.slotButton.onClick.AddListener(() => OnSlotClicked(capturedSlot));
+                Debug.Log($"[EquipmentUIManager] Registered slot button: {capturedSlot}");
             }
 
-            Image img = found.GetComponentInChildren<Image>();
-            if (img != null)
-                slot.iconImage = img;
+            slot.iconImage = found.GetComponentInChildren<Image>();
         }
     }
 
     void OnSlotClicked(string slotName)
     {
-        Debug.Log($"🎯 Slot clicked: {slotName}");
+        Debug.Log($"[EquipmentUIManager] Slot clicked: {slotName}");
 
         Item heldItem = inventory.rightHand ?? inventory.leftHand;
         if (heldItem == null)
         {
-            Debug.Log("👐 No item in hand to equip.");
+            Debug.Log("[EquipmentUIManager] No item in hand.");
             return;
         }
 
-        ItemData itemData = heldItem.data;
-
-        if (!IsItemValidForSlot(itemData, slotName))
+        if (!IsItemValidForSlot(heldItem, slotName))
         {
-            Debug.Log($"❌ {itemData.itemName} cannot be equipped in {slotName} slot.");
+            Debug.Log($"[EquipmentUIManager] Item '{heldItem.itemName}' invalid for slot '{slotName}'.");
             return;
         }
 
-        EquipToSlot(slotName, heldItem);
+        if (EquipToSlot(slotName, heldItem))
+            UpdateSlotIcon(slotName, heldItem);
     }
 
-    bool IsItemValidForSlot(ItemData itemData, string slotName)
+    bool IsItemValidForSlot(Item item, string slotName)
     {
-        slotName = slotName.ToLower();
+        string lowerSlot = slotName.ToLower();
 
-        if (itemData.itemType == ItemType.Clothing)
-            return itemData.clothingSlot.ToString().ToLower() == slotName;
-
-        if (itemData.itemType == ItemType.Bag && slotName == "backpack")
-            return true;
-
-        if (itemData.itemType == ItemType.Holster && slotName == "holster")
-            return true;
-
-        return false;
-    }
-
-    void EquipToSlot(string slotName, Item item)
-    {
-        Debug.Log($"✅ Equipped {item.itemName} to {slotName}");
-
-        inventory.EquipItem(item);
-
-        SlotReference slotRef = equipmentSlots.Find(s => s.slotName.ToLower() == slotName.ToLower());
-        if (slotRef != null && slotRef.iconImage != null)
+        return item.itemType switch
         {
-            slotRef.iconImage.sprite = item.icon != null ? item.icon : defaultIcon;
-            slotRef.iconImage.enabled = true;
+            ItemType.Clothing => item.clothingSlot.ToString().ToLower() == lowerSlot,
+            ItemType.Bag => lowerSlot == "backpack",
+            ItemType.Holster => lowerSlot == "holster",
+            _ => false
+        };
+    }
+
+    bool EquipToSlot(string slotName, Item item)
+    {
+        bool equipped = inventory.EquipItem(item);
+        Debug.Log(equipped
+            ? $"[EquipmentUIManager] Equipped '{item.itemName}' to {slotName}."
+            : $"[EquipmentUIManager] Failed to equip '{item.itemName}' to {slotName}.");
+
+        return equipped;
+    }
+
+    void UpdateSlotIcon(string slotName, Item item)
+    {
+        SlotReference slotRef = equipmentSlots.Find(s => s.slotName.Equals(slotName, System.StringComparison.OrdinalIgnoreCase));
+        if (slotRef == null || slotRef.iconImage == null)
+        {
+            Debug.LogWarning($"[EquipmentUIManager] Slot icon update failed for '{slotName}'.");
+            return;
+        }
+
+        Sprite iconToUse = item.EquippedSprite ?? item.icon ?? defaultIcon;
+        slotRef.iconImage.sprite = iconToUse;
+        slotRef.iconImage.enabled = true;
+    }
+
+    void SyncIconsFromEquippedItems()
+    {
+        foreach (var gear in inventory.GetEquippedGear())
+        {
+            if (gear == null || gear.data == null) continue;
+
+            string slot = gear.clothingSlot.ToString().ToLower();
+            UpdateSlotIcon(slot, gear);
+            Debug.Log($"[EquipmentUIManager] Synced icon for equipped: {gear.itemName}");
+        }
+    }
+
+    void InitializeStoragePanels()
+    {
+        foreach (var gear in inventory.GetEquippedGear())
+        {
+            if (gear == null || !gear.isContainer || gear.storageCapacity <= 0) continue;
+
+            Debug.Log($"[EquipmentUIManager] Initializing storage for '{gear.itemName}' with {gear.storageCapacity} slots.");
+            // TODO: Instantiate HUD container prefab via manager or panel spawner
         }
     }
 
@@ -126,25 +150,9 @@ public class EquipmentUIManager : MonoBehaviour
         int total = 0;
         foreach (var gear in inventory.GetEquippedGear())
         {
-            if (gear?.data != null)
-                total += gear.data.storageCapacity;
+            if (gear != null)
+                total += gear.storageCapacity;
         }
         return total;
-    }
-
-    void InitializeStorageSlots()
-    {
-        foreach (var gear in inventory.GetEquippedGear())
-        {
-            if (gear?.data == null) continue;
-
-            ItemData data = gear.data;
-
-            if (data.isContainer && data.storageCapacity > 0)
-            {
-                Debug.Log($"📦 Initializing storage panel for: {data.itemName} ({data.storageCapacity} slots)");
-                // TODO: Instantiate storage UI panels or slot containers here using your HUD prefab manager
-            }
-        }
     }
 }

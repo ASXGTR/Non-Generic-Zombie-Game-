@@ -1,122 +1,132 @@
-﻿using UnityEngine;
+﻿using Game.Inventory;
+using Game.Stats;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
-[ExecuteAlways]
 public class HUDManager : MonoBehaviour
 {
-    [Header("HUD Text References")]
-    public TMP_Text HealthText;
-    public TMP_Text HydrationText;
-    public TMP_Text HungerText;
-    public TMP_Text TemperatureText;
-    public TMP_Text SicknessText;
-    public TMP_Text StaminaText;
+    [Header("Stat Icons & Labels")]
+    public Image hydrationIcon;
+    public Image hungerIcon;
+    public Image temperatureIcon;
+    public Image sicknessIcon;
 
-    [Header("HUD Visibility Control")]
-    public CanvasGroup hudCanvasGroup; // ✅ Optional: assign this in Inspector if you want fading
-    public bool showDebugLogs = false; // ✅ Toggle logging from Inspector
+    [Header("Optional Symbol Sprites")]
+    public Sprite hydrationSprite;
+    public Sprite hungerSprite;
+    public Sprite temperatureSprite;
+    public Sprite sicknessSprite;
+
+    [Header("Stat Values")]
+    public TMP_Text hydrationValue;
+    public TMP_Text hungerValue;
+    public TMP_Text temperatureValue;
+    public TMP_Text sicknessValue;
+
+    [Header("Time & Compass Overlays")]
+    public Image watchIcon;
+    public TMP_Text timeDisplay;
+
+    public Image compassIcon;
+    public TMP_Text compassDirectionText;
+
+    private InventoryManager inventoryManager;
 
     void Start()
     {
-        if (Application.isPlaying && hudCanvasGroup != null)
-        {
-            ShowHUDInstant(); // Ensures HUD is visible on start
-        }
+        inventoryManager = FindFirstObjectByType<InventoryManager>();
+        InitializeIcons();
+        HideOptionalOverlays();
     }
 
-    void Update()
+    void InitializeIcons()
     {
-        if (!Application.isPlaying)
-        {
-            UpdatePreviewValues();
-        }
-        else if (showDebugLogs)
-        {
-            DebugHUDStatus();
-        }
+        if (hydrationIcon != null && hydrationSprite != null)
+            hydrationIcon.sprite = hydrationSprite;
+
+        if (hungerIcon != null && hungerSprite != null)
+            hungerIcon.sprite = hungerSprite;
+
+        if (temperatureIcon != null && temperatureSprite != null)
+            temperatureIcon.sprite = temperatureSprite;
+
+        if (sicknessIcon != null && sicknessSprite != null)
+            sicknessIcon.sprite = sicknessSprite;
     }
 
-    private void UpdatePreviewValues()
+    void HideOptionalOverlays()
     {
-        if (HealthText != null) HealthText.text = "<color=#00FF00>Health: 100</color>";
-        if (HydrationText != null) HydrationText.text = "<color=#FFFFFF>Hydration: 100</color>";
-        if (HungerText != null) HungerText.text = "<color=#FFFFFF>Hunger: 100</color>";
-        if (TemperatureText != null) TemperatureText.text = "<color=#FF4500>Temperature: 100°</color>";
-        if (SicknessText != null) SicknessText.text = "<color=#00FF00>Sickness: 0</color>";
-        if (StaminaText != null) StaminaText.text = "<color=#1E90FF>Stamina: 100</color>";
+        if (watchIcon != null) watchIcon.enabled = false;
+        if (compassIcon != null) compassIcon.enabled = false;
+        if (sicknessIcon != null) sicknessIcon.enabled = false;
     }
 
     public void UpdateHUD(PlayerStats stats)
     {
-        if (stats == null)
+        if (stats == null || inventoryManager == null)
         {
-            Debug.LogWarning("⚠️ HUDManager: PlayerStats reference is null.");
+            Debug.LogWarning("[HUDManager] Cannot update — missing stats or inventoryManager.");
             return;
         }
 
-        string healthColor = stats.health < 30 ? "#FF0000" : (stats.health < 60 ? "#FFFF00" : "#00FF00");
-        string hydrationColor = stats.hydration < 20 ? "#FF0000" : (stats.hydration < 40 ? "#FFFF00" : "#FFFFFF");
-        string hungerColor = stats.hunger < 20 ? "#FF0000" : (stats.hunger < 40 ? "#FFFF00" : "#FFFFFF");
-        string sicknessColor = stats.sickness > 70 ? "#FF0000" : (stats.sickness > 40 ? "#FFFF00" : "#00FF00");
-        string staminaColor = stats.stamina < 30 ? "#FF0000" : (stats.stamina < 60 ? "#FFFF00" : "#1E90FF");
-        string tempColor = stats.temperature <= 0 ? "#00BFFF" :
-                           stats.temperature >= 40 ? "#FF4500" : "#00FF00";
+        // 🧪 Sickness Logic
+        bool isDiseased = stats.sickness > 0f;
+        if (sicknessIcon != null)
+            sicknessIcon.enabled = isDiseased;
+        if (sicknessValue != null)
+            sicknessValue.text = $"{stats.sickness:0}";
 
-        if (HealthText != null) HealthText.text = $"<color={healthColor}>Health: {stats.health}</color>";
-        if (HydrationText != null) HydrationText.text = $"<color={hydrationColor}>Hydration: {stats.hydration}</color>";
-        if (HungerText != null) HungerText.text = $"<color={hungerColor}>Hunger: {stats.hunger}</color>";
-        if (TemperatureText != null) TemperatureText.text = $"<color={tempColor}>Temperature: {stats.temperature}°C</color>";
-        if (SicknessText != null) SicknessText.text = $"<color={sicknessColor}>Sickness: {stats.sickness}</color>";
-        if (StaminaText != null) StaminaText.text = $"<color={staminaColor}>Stamina: {stats.stamina}</color>";
-    }
+        // 🕒 Time Logic via Wrist Slot
+        InventoryItem watchItem = inventoryManager.allItems.Find(item =>
+            item.isEquipped && item.clothingSlot == ClothingSlot.Wrist && item.tracksTime);
 
-    public void ShowHUDInstant()
-    {
-        gameObject.SetActive(true);
-        if (hudCanvasGroup != null)
+        if (watchItem != null)
         {
-            hudCanvasGroup.alpha = 1f;
-            hudCanvasGroup.interactable = true;
-            hudCanvasGroup.blocksRaycasts = true;
-        }
-    }
-
-    public void HideHUDInstant()
-    {
-        if (hudCanvasGroup != null)
-        {
-            hudCanvasGroup.alpha = 0f;
-            hudCanvasGroup.interactable = false;
-            hudCanvasGroup.blocksRaycasts = false;
+            if (watchIcon != null) watchIcon.enabled = true;
+            if (timeDisplay != null)
+                timeDisplay.text = FormatTime(watchItem.hoursSinceAcquired);
         }
         else
         {
-            gameObject.SetActive(false);
+            if (watchIcon != null) watchIcon.enabled = false;
+            if (timeDisplay != null) timeDisplay.text = "";
         }
+
+        // 🧭 Compass Logic via Utility Slot
+        InventoryItem compassItem = inventoryManager.allItems.Find(item =>
+            item.isEquipped && item.clothingSlot == ClothingSlot.Utility && item.hasCompassFeature);
+
+        if (compassItem != null)
+        {
+            if (compassIcon != null) compassIcon.enabled = true;
+            if (compassDirectionText != null)
+                compassDirectionText.text = compassItem.taggedDirection;
+        }
+        else
+        {
+            if (compassIcon != null) compassIcon.enabled = false;
+            if (compassDirectionText != null) compassDirectionText.text = "";
+        }
+
+        // 🌡️ Temperature
+        if (temperatureValue != null)
+            temperatureValue.text = $"{stats.temperature:0}°";
+
+        // 🥩 Hunger
+        if (hungerValue != null)
+            hungerValue.text = $"{stats.hunger:0}";
+
+        // 💧 Hydration
+        if (hydrationValue != null)
+            hydrationValue.text = $"{stats.hydration:0}";
     }
 
-    private void DebugHUDStatus()
+    private string FormatTime(float hours)
     {
-        Debug.Log("🩺 HUDManager: GameObject active? " + gameObject.activeSelf);
-
-        if (transform.parent != null)
-        {
-            Debug.Log("🩺 HUDManager: Parent active? " + transform.parent.gameObject.activeSelf);
-        }
-        else
-        {
-            Debug.Log("🩺 HUDManager: No parent object.");
-        }
-
-        Canvas canvas = GetComponentInParent<Canvas>();
-        if (canvas != null)
-        {
-            Debug.Log("🩺 HUDManager: Canvas render mode = " + canvas.renderMode);
-            Debug.Log("🩺 HUDManager: Canvas sorting order = " + canvas.sortingOrder);
-        }
-        else
-        {
-            Debug.Log("🩺 HUDManager: No canvas found in parent.");
-        }
+        int totalMinutes = Mathf.RoundToInt(hours * 60);
+        int h = totalMinutes / 60;
+        int m = totalMinutes % 60;
+        return $"{h:D2}:{m:D2}";
     }
 }

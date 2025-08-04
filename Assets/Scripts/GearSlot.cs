@@ -1,70 +1,100 @@
+﻿using Game.Inventory;
+using Game.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
-using Game.Inventory;
+using static UnityEditor.Progress;
 
-public class GearSlot : MonoBehaviour, IDropHandler
+/// <summary>
+/// UI slot for gear. Handles drag-drop and hover tooltip.
+/// </summary>
+public class GearSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Slot Type")]
-    public ClothingSlot slotType; // Set in Inspector: Chest, Pants, etc.
+    public ClothingSlot slotType;
 
     [Header("UI References")]
     public Image icon;
     public TMP_Text itemNameText;
-    public GameObject conditionBar; // Optional, can add slider later
+    public GameObject conditionBar;
 
     private Item equippedItem;
 
+    /// <summary>
+    /// Sets the slot’s visuals and stores item reference.
+    /// </summary>
     public void SetItem(Item item)
     {
         equippedItem = item;
+        bool valid = item != null && item.data != null;
 
-        if (item != null && item.data != null)
+        if (icon != null)
         {
-            if (icon != null)
-            {
-                icon.sprite = item.data.Icon;
-                icon.enabled = true;
-            }
-
-            if (itemNameText != null)
-                itemNameText.text = item.data.itemName;
-
-            if (conditionBar != null)
-                conditionBar.SetActive(true); // Add fill logic later
+            icon.sprite = valid ? item.data.Icon : null;
+            icon.enabled = valid;
         }
-        else
-        {
-            if (icon != null)
-            {
-                icon.sprite = null;
-                icon.enabled = false;
-            }
 
-            if (itemNameText != null)
-                itemNameText.text = "";
+        if (itemNameText != null)
+            itemNameText.text = valid ? item.data.itemName : "";
 
-            if (conditionBar != null)
-                conditionBar.SetActive(false);
-        }
+        if (conditionBar != null)
+            conditionBar.SetActive(valid); // Hook durability later
+
+        // 🔁 Sync main UI (optional, to harmonize visuals across slots)
+        EquipmentUIManager eqUI = FindFirstObjectByType<EquipmentUIManager>();
+        if (eqUI != null)
+            eqUI.UpdateSlotIcon(slotType.ToString(), item);
     }
 
+    /// <summary>
+    /// Triggered when a draggable item is dropped onto this slot.
+    /// </summary>
     public void OnDrop(PointerEventData eventData)
     {
-        DraggableItem draggedItem = eventData.pointerDrag?.GetComponent<DraggableItem>();
-        if (draggedItem != null && draggedItem.item.data != null &&
-            draggedItem.item.data.clothingSlot == slotType)
+        DraggableItem dragged = eventData.pointerDrag?.GetComponent<DraggableItem>();
+        if (dragged?.item?.data == null)
         {
-            SetItem(draggedItem.item);
+            Debug.Log("[GearSlot] Dropped item is null or incomplete.");
+            return;
+        }
 
-            // TODO: Equip in Inventory
-            // e.g. inventory.EquipClothing(draggedItem.item);
+        if (dragged.item.data.clothingSlot != slotType)
+        {
+            Debug.LogWarning($"[GearSlot] Item '{dragged.item.itemName}' does not match slot '{slotType}'.");
+            return;
+        }
+
+        SetItem(dragged.item);
+
+        // 🔧 Equip logic forwarding
+        Inventory inventory = FindFirstObjectByType<Inventory>();
+        inventory?.EquipItem(dragged.item);
+    }
+
+    /// <summary>
+    /// Fires tooltip when pointer enters the slot.
+    /// </summary>
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (equippedItem != null && equippedItem.data != null)
+        {
+            TooltipUI tooltip = FindFirstObjectByType<TooltipUI>();
+            tooltip?.SetContent(equippedItem.data.itemName, equippedItem.data.TooltipText);
         }
     }
 
-    public ClothingSlot GetSlotType()
+    /// <summary>
+    /// Hides tooltip when pointer exits.
+    /// </summary>
+    public void OnPointerExit(PointerEventData eventData)
     {
-        return slotType;
+        TooltipUI tooltip = FindFirstObjectByType<TooltipUI>();
+        tooltip?.Hide();
     }
+
+    /// <summary>
+    /// Returns the clothing slot type.
+    /// </summary>
+    public ClothingSlot GetSlotType() => slotType;
 }

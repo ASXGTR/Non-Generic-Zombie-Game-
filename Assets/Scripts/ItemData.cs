@@ -3,68 +3,74 @@ using UnityEngine;
 
 namespace Game.Inventory
 {
-    [CreateAssetMenu(fileName = "NewItemData", menuName = "Inventory/ItemData")]
+    [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
     public class ItemData : ScriptableObject
     {
-        [Header("Core Info")]
-        public string id;
-        public string itemName;
-        [SerializeField] private Sprite icon;
-        public Sprite Icon => icon;
-        public string itemDescription;
+        [Header("🆔 Basic Info")]
+        [Tooltip("Unique item ID (use GUID or meaningful string)")]
+        [SerializeField] private string id;
+        public string Id => string.IsNullOrEmpty(id) ? "Unnamed_Item" : id;
+
+        [Tooltip("Item name used in UI")]
+        [SerializeField] private string itemName;
+        public string ItemName => string.IsNullOrEmpty(itemName) ? "Unnamed" : itemName;
+
+        [Tooltip("Main tooltip description")]
+        [TextArea(3, 5)]
+        [SerializeField] private string tooltipText;
+        public string TooltipText => tooltipText;
+
+        [Header("🎨 Visuals")]
+        [Tooltip("Main UI icon")]
+        public Sprite icon;
+
+        [Tooltip("Optional override when equipped")]
+        public Sprite equippedSprite;
+
+        [Header("⚙️ Item Properties")]
         public ItemType itemType;
         public Rarity rarity;
         public float condition = 100f;
+        public float weight = 1f;
 
-        [Header("Slot Assignment")]
+        [Header("👕 Equip & Slot Info")]
         public ClothingSlot clothingSlot;
         public SlotType slotType;
         public GearSlotType gearSlotType;
-        public List<SlotType> slotTypes = new List<SlotType>();
+        public int slotFootprint = 1; // For grid-based storage
 
-        [Header("Consumable Properties")]
-        public ConsumableType consumableType;
-        public float hungerRestore = 0f;
-        public float hydrationRestore = 0f;
-        public float sicknessChance = 0f;
-
-        [Header("Cooking System")]
-        public bool canBeCooked = false;
-        public CookingMethod cookMethod;
-        public ItemData cookedVariantBoil;
-        public ItemData cookedVariantGrill;
-        public ItemData cookedVariantBake;
-        public ItemData cookedVariantRoast;
-        public List<CookingRequirement> cookingRequirements = new List<CookingRequirement>();
+        [Header("🔥 Cooking")]
         public bool isHot = false;
         public float hotDuration = 0f;
 
-        [Header("Durability & Container Settings")]
-        public float maxDurability = 0f;
+        [Header("📦 Container Settings")]
         public bool isContainer = false;
         public int containerCapacity = 0;
-        public int storageCapacity = 0;
         public int storageSlotCapacity = 0;
-        public float weight = 1f;
+        public int storageCapacity = 0; // 🔧 Added to match InventoryItem
+        public List<SlotType> slotTypes = new();
 
-        [Header("Tags")]
-        public List<string> tags = new List<string>();
+        [Header("🏷️ Tags & Metadata")]
+        [SerializeField] private List<string> tags = new();
+        public List<string> Tags => tags;
 
-        [Header("Clothing Visuals")]
-        [SerializeField] private Sprite equippedSprite;         // 👕 Icon shown when worn
-        [SerializeField] private GameObject clothingPrefab;     // 🧍 Optional for in-world visuals
+        // ──────────────────────────────────────
+        // 🧠 Utility Accessors & Helpers
+        // ──────────────────────────────────────
 
-        public Sprite EquippedSprite => equippedSprite;
-        public GameObject ClothingPrefab => clothingPrefab;
-    }
+        public bool IsEquippable =>
+            itemType == ItemType.Clothing || itemType == ItemType.Holster;
 
-    [System.Serializable]
-    public class CookingRequirement
-    {
-        public CookingMethod method;
-        public List<string> requiredItems = new List<string>();
-        public List<string> validHeatSources = new List<string>();
-        public List<string> requiredStructures = new List<string>();
-        public bool requiresIndoorOven = false;
+        public bool IsStackable =>
+            !isContainer && condition == 100f && weight < 5f;
+
+        public bool HasStorage =>
+            isContainer && containerCapacity > 0;
+
+        public bool AcceptsSlotType(SlotType type) =>
+            slotTypes != null && slotTypes.Contains(type);
+
+        public bool HasTag(string query) =>
+            tags != null && tags.Contains(query);
     }
 }

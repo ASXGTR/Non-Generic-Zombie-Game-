@@ -2,9 +2,9 @@ using UnityEditor;
 using UnityEngine;
 using Game.Inventory;
 
-public static class Editor_ItemDataLabeler
+public static class ItemDataLabelerEditor
 {
-    // Run this manually from menu or call from AssetPostprocessor for auto on save (see below)
+    // Run this manually from menu or call from AssetPostprocessor for auto on save
     [MenuItem("Assets/Label ItemData Assets by Tags and Type")]
     public static void LabelSelectedItemDataAssets()
     {
@@ -21,9 +21,9 @@ public static class Editor_ItemDataLabeler
                 labelsList.Add(itemData.itemType.ToString());
 
                 // Add tags as labels (avoid duplicates)
-                foreach (var tag in itemData.tags)
+                foreach (var tag in itemData.Tags)
                 {
-                    if (!string.IsNullOrWhiteSpace(tag) && !labelsList.Contains(tag))
+                    if (!string.IsNullOrWhiteSpace(tag) && !labelsList.Contains(tag.Trim()))
                     {
                         labelsList.Add(tag.Trim());
                     }
@@ -32,7 +32,7 @@ public static class Editor_ItemDataLabeler
                 // Assign all labels to the asset
                 AssetDatabase.SetLabels(itemData, labelsList.ToArray());
 
-                Debug.Log($"Set labels [{string.Join(", ", labelsList)}] for '{itemData.itemName}'");
+                Debug.Log($"Set labels [{string.Join(", ", labelsList)}] for '{itemData.ItemName}'");
             }
         }
 

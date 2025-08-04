@@ -42,12 +42,13 @@ MonoBehaviour:
   storageCapacity: 6
   storageSlotCapacity: 0
   weight: 0.3
+  slotFootprint: 6
   tags:
-  - Clothing
+  - Chest
   - Clothes
-  - Top
-  - Storage
-  - Gear
+  - Clothing
   - Equipment
-  equippedSprite: {fileID: 21300000, guid: efcb5c91e00764841a71e0fcfbbc0529, type: 3}
+  - Gear
+  - Storage
+  equippedSprite: {fileID: 21300000, guid: 47403cb1ecde1bc43883c94e4f7a7479, type: 3}
   clothingPrefab: {fileID: 0}

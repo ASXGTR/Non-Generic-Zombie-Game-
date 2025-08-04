@@ -1,7 +1,12 @@
 fileFormatVersion: 2
 guid: 97d3a37d9e74c0b44afd5132865be0d2
 labels:
+- Clothes
 - Clothing
+- Gear
+- Jeans
+- Pants
+- Storage
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 11400000

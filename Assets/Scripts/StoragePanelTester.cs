@@ -1,34 +1,40 @@
-﻿using UnityEngine;
-using Game.Inventory;
-using Game.UI; // ✅ Added for InventoryUIManager
+﻿using Game.Inventory;
+using Game.UI; // ✅ Required for InventoryUIManager reference
+using UnityEngine;
 
-public class StorageTestLite : MonoBehaviour
+/// <summary>
+/// Lite test for showing an item's internal storage in the inventory UI panel.
+/// </summary>
+public class StoragePanelTester : MonoBehaviour
 {
     [Header("Assign the Green Apple ItemData")]
-    public ItemData greenAppleData;
+    [SerializeField] private ItemData greenAppleData;
 
     [Header("Assign your Inventory UI Manager")]
-    public InventoryUIManager uiManager;
+    [SerializeField] private InventoryUIManager uiManager;
 
-    void Start()
+    private const string logTag = "[StoragePanelTester]";
+
+    private void Start()
     {
         if (greenAppleData == null || uiManager == null)
         {
-            Debug.LogWarning("[StorageTestLite] Assign Green Apple and UI Manager in Inspector.");
+            Debug.LogWarning($"{logTag} ⚠️ Missing references! Assign Green Apple and UI Manager in inspector.");
             return;
         }
 
-        Item greenAppleItem = new Item(greenAppleData);
+        // Create a Green Apple item and add one copy to its internal storage (simulating container test)
+        Item containerItem = new Item(greenAppleData);
 
-        if (greenAppleItem.internalStorage != null)
+        if (containerItem.internalStorage != null)
         {
-            greenAppleItem.internalStorage.Add(new Item(greenAppleData));
-            uiManager.ShowStorage(greenAppleItem);
-            Debug.Log($"[StorageTestLite] Showing 1 Green Apple in panel.");
+            containerItem.internalStorage.Add(new Item(greenAppleData));
+            uiManager.ShowStorage(containerItem);
+            Debug.Log($"{logTag} 📦 Showing 1 Green Apple inside container UI.");
         }
         else
         {
-            Debug.LogWarning("[StorageTestLite] Item has no internal storage. Not a container.");
+            Debug.LogWarning($"{logTag} ❌ Item has no internal storage. Not a container.");
         }
     }
 }

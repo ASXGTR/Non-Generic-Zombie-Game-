@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Loads a story node JSON from the Resources/Nodes/ folder by ID.
+/// </summary>
 public static class NodeLoader
 {
     /// <summary>
-    /// Loads a story node JSON from the Resources/Nodes/ folder by ID.
+    /// Loads and deserializes a StoryNode from Resources/Nodes/{nodeId}.json.
     /// </summary>
     /// <param name="nodeId">The name of the JSON file (without .json extension).</param>
     /// <returns>Deserialized StoryNode object or null on failure.</returns>
@@ -24,23 +27,24 @@ public static class NodeLoader
             return null;
         }
 
+        StoryNode node;
         try
         {
-            StoryNode node = JsonUtility.FromJson<StoryNode>(nodeFile.text);
-
-            if (node == null)
-            {
-                Debug.LogError($"❌ NodeLoader: Failed to deserialize JSON for nodeId: {nodeId}");
-                return null;
-            }
-
-            Debug.Log($"📘 NodeLoader: Successfully loaded node '{nodeId}'.");
-            return node;
+            node = JsonUtility.FromJson<StoryNode>(nodeFile.text);
         }
         catch (System.Exception ex)
         {
             Debug.LogError($"❌ NodeLoader: Exception while parsing node '{nodeId}': {ex.Message}");
             return null;
         }
+
+        if (node == null)
+        {
+            Debug.LogError($"❌ NodeLoader: Failed to deserialize JSON for nodeId: {nodeId}");
+            return null;
+        }
+
+        Debug.Log($"📘 NodeLoader: Successfully loaded node '{nodeId}'.");
+        return node;
     }
 }
