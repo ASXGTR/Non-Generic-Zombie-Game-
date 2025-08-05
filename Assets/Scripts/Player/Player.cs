@@ -1,0 +1,27 @@
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    public UIController UIController;
+    public GameObject DeadScreen;
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            UIController.ToggleInventory(); // Optional shortcut
+        }
+    }
+
+    public void OnPlayerDeath()
+    {
+        DeadScreen.SetActive(true);
+        UIController.InventoryPanel.SetActive(false); // Hide inventory on death
+    }
+
+    public void OnItemPickup(InventoryItem item)
+    {
+        InventoryManager.Instance.AddItem(item);
+        UIController.ToggleInventory(); // Optional: auto-show inventory
+    }
+}

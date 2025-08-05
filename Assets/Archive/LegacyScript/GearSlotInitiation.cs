@@ -1,4 +1,7 @@
-﻿using Game.Inventory;
+﻿// 🔒 Deprecated GearSlotInitiation.cs
+// Logic modularized into GearSlotRegistry.cs and supporting systems on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+using Game.Inventory;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

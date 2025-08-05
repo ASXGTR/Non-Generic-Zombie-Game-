@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Game.Inventory
 {
+    // 🔒 Deprecated InventoryItem.cs
+    // Merged into modular InventoryItem.cs on 2025-08-05
+    // Retained for reference only. Do not use in runtime.
+
     /// <summary>
     /// Represents a modular item container with optional internal storage, transfer rules, and stat traits.
     /// </summary>
