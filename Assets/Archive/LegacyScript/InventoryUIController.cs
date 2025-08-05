@@ -1,4 +1,9 @@
 ﻿// InventoryUIController.cs
+
+// 🔒 Deprecated InventoryUIController.cs
+// Logic merged into modular InventoryUI.cs, UIController.cs, and related systems on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+
 using Game.Inventory;
 using Game.UI;
 using InventorySystem;

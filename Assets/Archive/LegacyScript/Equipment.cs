@@ -1,3 +1,8 @@
+﻿// 🔒 Deprecated Equipment.cs
+// Logic merged into EquipmentManager.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+
+
 using Game.Inventory;
 using System.Collections.Generic;
 using UnityEngine;

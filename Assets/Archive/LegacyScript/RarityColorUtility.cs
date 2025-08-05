@@ -1,3 +1,7 @@
+﻿// 🔒 Deprecated RarityColorUtility.cs
+// Logic modularized into UI/Styling/RarityColorMap.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+
 using UnityEngine;
 using Game.Inventory; // Recognizes the Rarity enum
 
@@ -20,7 +24,7 @@ public static class RarityColorUtility
     /// Gets the base rarity color adjusted for transparency.
     /// </summary>
     /// <param name="rarity">The item's rarity enum.</param>
-    /// <param name="alpha">Alpha (0�1).</param>
+    /// <param name="alpha">Alpha (0–1).</param>
     /// <returns>Color adjusted for UI overlays, highlights, etc.</returns>
     public static Color GetColor(Rarity rarity, float alpha)
     {

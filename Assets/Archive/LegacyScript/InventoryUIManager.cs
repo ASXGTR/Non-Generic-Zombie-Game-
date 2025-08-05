@@ -1,4 +1,9 @@
-﻿using Game.Inventory;
+﻿// 🔒 Deprecated InventoryUIManager.cs
+// Functionality merged into UIController.cs and InventoryUI.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+
+
+using Game.Inventory;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Progress;

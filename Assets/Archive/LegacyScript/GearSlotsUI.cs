@@ -1,4 +1,9 @@
-﻿using Game.Inventory;
+﻿// 🔒 Deprecated GearSlotUI.cs
+// Logic modularized into UI/Inventory/GearSlotUI.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+
+
+using Game.Inventory;
 using Game.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;

@@ -1,34 +1,36 @@
-// File: Assets/Scripts/Player/PlayerStats.cs
 using UnityEngine;
 
-namespace Game.Player
+public class PlayerStats : MonoBehaviour
 {
-    [System.Serializable]
-    public class Stat
+    [Header("Core Stats")]
+    public int health;
+    public int stamina;
+    public int strength;
+
+    private EquipmentManager equipmentManager;
+
+    void Awake()
     {
-        public string name;
-        public int baseValue;
-        public int modifier;
-        public int Current => baseValue + modifier;
+#if UNITY_2023_1_OR_NEWER
+        equipmentManager = Object.FindFirstObjectByType<EquipmentManager>();
+#else
+        equipmentManager = FindObjectOfType<EquipmentManager>();
+#endif
     }
 
-    public class PlayerStats : MonoBehaviour
+    public InventoryItem GetEquippedItem(string slotName)
     {
-        [SerializeField] private Stat[] stats;
+        if (equipmentManager == null || string.IsNullOrEmpty(slotName))
+            return null;
 
-        public int GetStat(string statName)
-        {
-            foreach (var s in stats)
-                if (s.name == statName)
-                    return s.Current;
-            return 0;
-        }
-
-        public void ModifyStat(string statName, int delta)
-        {
-            foreach (var s in stats)
-                if (s.name == statName)
-                    s.modifier += delta;
-        }
+        return equipmentManager.GetEquippedItem(slotName);
     }
+
+    public bool HasEquippedWeapon()
+    {
+        InventoryItem weapon = GetEquippedItem("Weapon");
+        return weapon != null;
+    }
+
+    // Other stat-related methods...
 }

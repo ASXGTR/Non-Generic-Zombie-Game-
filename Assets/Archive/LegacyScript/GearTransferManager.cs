@@ -1,3 +1,6 @@
+﻿// 🔒 Deprecated GearTransferManager.cs
+// Logic modularized into GearTransferService.cs and supporting systems on 2025-08-05
+// Retained for reference only. Do not use in runtime.
 using Game.Inventory;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,7 +62,7 @@ namespace Game.Inventory
                 if (!string.IsNullOrEmpty(requiredCategory) &&
                     !string.Equals(item.category, requiredCategory, System.StringComparison.OrdinalIgnoreCase))
                 {
-                    Debug.Log($"{logTag} Skipped {item.ItemName} � category mismatch.");
+                    Debug.Log($"{logTag} Skipped {item.ItemName} — category mismatch.");
                     continue;
                 }
 

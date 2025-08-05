@@ -1,4 +1,10 @@
-﻿using Game.Inventory;
+﻿
+// 🔒 Deprecated HUDManager.cs
+// Logic modularized into WeaponHUDDisplay.cs and supporting systems on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+
+
+using Game.Inventory;
 using Game.Stats;
 using TMPro;
 using UnityEngine;
