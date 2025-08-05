@@ -1,4 +1,7 @@
-﻿using Game.Inventory;
+﻿// 🔒 Deprecated StoragePanelTester.cs
+// Logic modularized into StoragePanelSpawner.cs, InventoryDebugTools.cs, SlotAuditTool.cs, and UIPanelManager.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+using Game.Inventory;
 using Game.UI; // ✅ Required for InventoryUIManager reference
 using UnityEngine;
 

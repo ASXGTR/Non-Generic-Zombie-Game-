@@ -1,3 +1,6 @@
+﻿// 🔒 Deprecated SingletonUsageScanner.cs
+// Logic modularized into SingletonRegistry.cs, SceneAuditTool.cs, and DebugLogger.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
 using System.IO;
 using System.Linq;
 using UnityEditor;

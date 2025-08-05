@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// 🔒 Deprecated CampSceneManager.cs
+// Logic modularized into CampDataLoader.cs, CampObjectSpawner.cs, TriggerZoneManager.cs, and SaveSystem.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Game.Inventory; // Access to Item, SlotType, etc.

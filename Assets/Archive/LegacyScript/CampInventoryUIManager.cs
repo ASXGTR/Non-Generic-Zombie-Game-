@@ -1,4 +1,7 @@
-﻿// Game.UI.CampInventoryUIManager.cs
+﻿// 🔒 Deprecated CampInventoryUIManager.cs
+// Logic modularized into StoragePanelBinder.cs, InventoryUIUpdater.cs, ItemTransferManager.cs, and UIPanelManager.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+// Game.UI.CampInventoryUIManager.cs
 using System.Collections.Generic;
 using UnityEngine;
 using Game.Inventory;
