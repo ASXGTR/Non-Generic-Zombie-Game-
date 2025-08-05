@@ -1,3 +1,6 @@
+﻿// 🔒 Deprecated CookingHelper.cs
+// Logic modularized into RecipeFormatter.cs, InventoryFilter.cs, and CookingValidator.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
 using System.Collections.Generic;
 using System.Linq;
 using Game.Inventory;

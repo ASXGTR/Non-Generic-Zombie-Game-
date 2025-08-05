@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// 🔒 Deprecated DragableItems.cs
+// Logic modularized into UIDragHandler.cs, SlotDetector.cs, ItemSnapper.cs, and DropValidator.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Game.Inventory;

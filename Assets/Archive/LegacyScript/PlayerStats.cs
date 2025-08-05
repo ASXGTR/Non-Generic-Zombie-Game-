@@ -1,4 +1,7 @@
-﻿// PlayerStats.cs
+﻿// 🔒 Deprecated PlayerStats.cs
+// Logic modularized into VitalsManager.cs, StaminaSystem.cs, SurvivalStats.cs, and DeathHandler.cs on 2025-08-05
+// Retained for reference only. Do not use in runtime.
+// PlayerStats.cs
 using UnityEngine;
 using System.Collections.Generic;
 using DiseaseSystem;
