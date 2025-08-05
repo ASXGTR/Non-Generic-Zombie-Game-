@@ -1,7 +1,6 @@
-// File: Assets/Scripts/DialogueSystem/DialogueVariableProxy.cs
 using UnityEngine;
 
-namespace Game.DialogueSystem
+namespace DialogueSystem
 {
     public class DialogueVariableProxy : MonoBehaviour
     {

@@ -95,13 +95,13 @@ namespace Game.Inventory
             return ValidateSlotCompatibility(item.itemType, slotType);
         }
 
-        private bool ValidateSlotCompatibility(ItemType itemType, SlotType slotType) => itemType switch
+        private bool ValidateSlotCompatibility(ItemTypeEnum itemType, SlotType slotType) => itemType switch
         {
-            ItemType.Handheld => slotType == SlotType.Utility,
-            ItemType.Consumable => slotType == SlotType.Food,
-            ItemType.Clothing => slotType == SlotType.Clothing,
-            ItemType.Holster => slotType == SlotType.Holster,
-            ItemType.Bag => slotType == SlotType.General,
+            ItemTypeEnum.Handheld => slotType == SlotType.Utility,
+            ItemTypeEnum.Consumable => slotType == SlotType.Food,
+            ItemTypeEnum.Clothing => slotType == SlotType.Clothing,
+            ItemTypeEnum.Holster => slotType == SlotType.Holster,
+            ItemTypeEnum.Bag => slotType == SlotType.General,
             _ => false,
         };
 

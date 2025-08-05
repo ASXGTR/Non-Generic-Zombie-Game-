@@ -1,8 +1,7 @@
-// File: Assets/Scripts/DevTools/FlagUsageAudit.cs
 using UnityEngine;
 using System.Linq;
 
-namespace Game.DialogueSystem
+namespace DevTools
 {
     public class FlagUsageAudit : MonoBehaviour
     {
@@ -17,7 +16,7 @@ namespace Game.DialogueSystem
                 foreach (var key in flagSystem.flags.Keys)
                 {
                     if (!text.Contains(key))
-                        Debug.Log($"[Audit] Flag '{key}' not referenced in {asset.name}");
+                        UnityEngine.Debug.Log($"[Audit] Flag '{key}' not referenced in {asset.name}");
                 }
             }
         }

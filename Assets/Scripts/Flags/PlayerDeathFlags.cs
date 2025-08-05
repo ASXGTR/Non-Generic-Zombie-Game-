@@ -1,9 +1,12 @@
-public enum PlayerDeathFlags
+namespace Flags
 {
-    HeartFailure,
-    BloodLoss,
-    HeadTrauma,
-    Suffocation,
-    OrganFailure,
-    PsychologicalCollapse
+    public enum PlayerDeathFlags
+    {
+        HeartFailure,
+        BloodLoss,
+        HeadTrauma,
+        Suffocation,
+        OrganFailure,
+        PsychologicalCollapse
+    }
 }

@@ -1,27 +1,31 @@
-using UnityEngine;
-
-public class Player : MonoBehaviour
+namespace Project.Player
 {
-    public UIController UIController;
-    public GameObject DeadScreen;
+    using Game.Inventory;
+    using UnityEngine;
 
-    void Update()
+    public class Player : MonoBehaviour
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        public UIController UIController;
+        public GameObject DeadScreen;
+
+        void Update()
         {
-            UIController.ToggleInventory(); // Optional shortcut
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                UIController.ToggleInventory(); // Optional shortcut
+            }
         }
-    }
 
-    public void OnPlayerDeath()
-    {
-        DeadScreen.SetActive(true);
-        UIController.InventoryPanel.SetActive(false); // Hide inventory on death
-    }
+        public void OnPlayerDeath()
+        {
+            DeadScreen.SetActive(true);
+            UIController.InventoryPanel.SetActive(false); // Hide inventory on death
+        }
 
-    public void OnItemPickup(InventoryItem item)
-    {
-        InventoryManager.Instance.AddItem(item);
-        UIController.ToggleInventory(); // Optional: auto-show inventory
+        public void OnItemPickup(InventoryItem item)
+        {
+            InventoryManager.Instance.AddItem(item);
+            UIController.ToggleInventory(); // Optional: auto-show inventory
+        }
     }
 }

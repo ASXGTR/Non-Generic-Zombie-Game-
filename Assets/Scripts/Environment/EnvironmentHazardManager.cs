@@ -1,24 +1,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnvironmentHazardManager : MonoBehaviour
+namespace Environment.Hazards
 {
-    public HashSet<EnvironmentHazardFlags> activeHazards = new();
-
-    public void AddHazard(EnvironmentHazardFlags hazard)
+    public class EnvironmentHazardManager : MonoBehaviour
     {
-        activeHazards.Add(hazard);
-        Debug.Log("Hazard detected: " + hazard);
-    }
+        public HashSet<EnvironmentHazardFlags> activeHazards = new();
 
-    public void RemoveHazard(EnvironmentHazardFlags hazard)
-    {
-        if (activeHazards.Contains(hazard))
+        public void AddHazard(EnvironmentHazardFlags hazard)
         {
-            activeHazards.Remove(hazard);
-            Debug.Log("Hazard resolved: " + hazard);
+            activeHazards.Add(hazard);
+            Debug.Log("Hazard detected: " + hazard);
         }
-    }
 
-    public bool HasHazard(EnvironmentHazardFlags hazard) => activeHazards.Contains(hazard);
+        public void RemoveHazard(EnvironmentHazardFlags hazard)
+        {
+            if (activeHazards.Contains(hazard))
+            {
+                activeHazards.Remove(hazard);
+                Debug.Log("Hazard resolved: " + hazard);
+            }
+        }
+
+        public bool HasHazard(EnvironmentHazardFlags hazard) => activeHazards.Contains(hazard);
+    }
 }

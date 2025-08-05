@@ -1,7 +1,6 @@
-// File: Assets/Scripts/DevTools/FlagPresetLoader.cs
 using UnityEngine;
 
-namespace Game.DialogueSystem
+namespace DevTools
 {
     [System.Serializable]
     public struct FlagPreset

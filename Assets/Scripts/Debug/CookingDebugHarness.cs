@@ -1,19 +1,23 @@
 using Game.Inventory;
+using Inventory;
 using Inventory.DataModels;
 using Systems.Cooking;
 using UnityEngine;
 
-public class CookingDebugHarness : MonoBehaviour
+namespace Debug
 {
-    public ItemData[] testIngredients;
-    public RecipeData recipe;
-
-    void Start()
+    public class CookingDebugHarness : MonoBehaviour
     {
-        if (CookingValidator.CanBeCooked(testIngredients[0]))
+        public ItemData[] testIngredients;
+        public RecipeData recipe;
+
+        void Start()
         {
-            float burnChance = CookingOutcomeCalculator.GetBurnChance(recipe, testIngredients);
-            Debug.Log($"Burn chance: {burnChance}%");
+            if (CookingValidator.CanBeCooked(testIngredients[0]))
+            {
+                float burnChance = CookingOutcomeCalculator.GetBurnChance(recipe, testIngredients);
+                UnityEngine.Debug.Log($"Burn chance: {burnChance}%");
+            }
         }
     }
 }

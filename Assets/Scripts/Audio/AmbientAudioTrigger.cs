@@ -1,7 +1,6 @@
-// File: Assets/Scripts/Audio/AmbientAudioTrigger.cs
 using UnityEngine;
 
-namespace Game.Audio
+namespace Audio
 {
     public class AmbientAudioTrigger : MonoBehaviour
     {

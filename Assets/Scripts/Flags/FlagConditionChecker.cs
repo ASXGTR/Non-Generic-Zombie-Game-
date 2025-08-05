@@ -1,8 +1,7 @@
-// File: Assets/Scripts/Flags/FlagConditionChecker.cs
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Game.DialogueSystem
+namespace Flags
 {
     public class FlagConditionChecker : MonoBehaviour
     {

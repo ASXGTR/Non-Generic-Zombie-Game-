@@ -1,4 +1,4 @@
-namespace Game.Player
+namespace Flags
 {
     /// <summary>
     /// Bitwise flags representing player conditions. Supports multi-status tracking.

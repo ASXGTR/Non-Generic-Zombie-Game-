@@ -1,9 +1,8 @@
-// File: Assets/Scripts/DevTools/FlagAutoGenerator.cs
 using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace Game.DialogueSystem
+namespace DevTools
 {
 #if UNITY_EDITOR
     public class FlagAutoGenerator : EditorWindow
@@ -48,7 +47,7 @@ namespace Game.DialogueSystem
 
                 AssetDatabase.CreateAsset(flagAsset, $"Assets/Flags/{flagAssetName}.asset");
                 AssetDatabase.SaveAssets();
-                Debug.Log($"[FlagAutoGenerator] Created StoryFlags asset with {allFlags.Count} flags.");
+                UnityEngine.Debug.Log($"[FlagAutoGenerator] Created StoryFlags asset with {allFlags.Count} flags.");
             }
         }
     }

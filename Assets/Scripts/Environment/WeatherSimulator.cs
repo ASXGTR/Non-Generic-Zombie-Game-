@@ -1,7 +1,6 @@
-// File: Assets/Scripts/Environment/WeatherSimulator.cs
 using UnityEngine;
 
-namespace Game.Environment
+namespace Environment
 {
     public enum WeatherType { Clear, Rain, Fog, Storm }
 

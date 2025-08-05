@@ -1,8 +1,7 @@
-// File: Assets/Scripts/Flags/StoryFlags.cs
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Game.DialogueSystem
+namespace Flags
 {
     [CreateAssetMenu(fileName = "StoryFlags", menuName = "Game/StoryFlags")]
     public class StoryFlags : ScriptableObject

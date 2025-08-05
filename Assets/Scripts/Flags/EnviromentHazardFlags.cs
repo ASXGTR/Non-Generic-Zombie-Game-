@@ -1,9 +1,12 @@
-public enum EnvironmentHazardFlags
+namespace Flags
 {
-    Radiation,
-    ToxicFog,
-    CollapsingStructure,
-    LooseWiring,
-    DiseasedWater,
-    EchoField
+    public enum EnvironmentHazardFlags
+    {
+        Radiation,
+        ToxicFog,
+        CollapsingStructure,
+        LooseWiring,
+        DiseasedWater,
+        EchoField
+    }
 }

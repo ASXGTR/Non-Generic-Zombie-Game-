@@ -28,7 +28,7 @@ namespace Game.Inventory
         {
             foreach (var item in ownedItems)
             {
-                if (item.itemType == ItemType.Clothing && !item.isEquipped)
+                if (item.itemType == ItemTypeEnum.Clothing && !item.isEquipped)
                 {
                     EquipItem(item);
                     Debug.Log($"[PlayerInventory] Auto-equipped: {item.ItemName}");
@@ -80,7 +80,7 @@ namespace Game.Inventory
 
         public void EquipItem(InventoryItem item)
         {
-            if (item == null || item.itemType != ItemType.Clothing)
+            if (item == null || item.itemType != ItemTypeEnum.Clothing)
             {
                 Debug.LogWarning($"[PlayerInventory] ❌ Cannot equip: {item?.ItemName}");
                 return;

@@ -3,18 +3,21 @@ using UI.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DragAndDropHarness : MonoBehaviour
+namespace Debug
 {
-    public GameObject itemPrefab;
-    public Transform[] dropSlots;
-
-    private GameObject draggedItem;
-
-    void Start()
+    public class DragAndDropHarness : MonoBehaviour
     {
-        draggedItem = Instantiate(itemPrefab, transform);
-        var dragHandler = draggedItem.AddComponent<UIDragHandler>();
-        dragHandler.Initialize(dropSlots);
-        Debug.Log("Drag-and-drop test initialized.");
+        public GameObject itemPrefab;
+        public Transform[] dropSlots;
+
+        private GameObject draggedItem;
+
+        void Start()
+        {
+            draggedItem = Instantiate(itemPrefab, transform);
+            var dragHandler = draggedItem.AddComponent<UIDragHandler>();
+            dragHandler.Initialize(dropSlots);
+            Debug.Log("Drag-and-drop test initialized.");
+        }
     }
 }

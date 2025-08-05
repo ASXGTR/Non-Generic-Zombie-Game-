@@ -1,8 +1,7 @@
-// File: Assets/Scripts/DialogueSystem/DialogueUI.cs
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.DialogueSystem
+namespace DialogueSystem
 {
     public class DialogueUI : MonoBehaviour
     {

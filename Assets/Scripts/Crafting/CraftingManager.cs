@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Game.Inventory;
+using Inventory;
 using System.Collections.Generic;
-using Game.Inventory;
+using UnityEngine;
 
-namespace Game.Crafting
+namespace Crafting
 {
     /// <summary>
     /// Handles crafting logic using predefined recipes and available inventory.
@@ -10,7 +11,7 @@ namespace Game.Crafting
     public class CraftingManager : MonoBehaviour
     {
         [Header("References")]
-        public Inventory playerInventory;
+        public InventoryManager playerInventory;
         public List<CraftingRecipe> availableRecipes;
 
         private const string logTag = "[CraftingManager]";
@@ -60,11 +61,8 @@ namespace Game.Crafting
 
         private void CreateCraftedItem(CraftingRecipe recipe)
         {
-            GameObject itemGO = new(recipe.resultItem.ItemName);
-            InventoryItem newItem = itemGO.AddComponent<InventoryItem>();
-            newItem.LoadFromData(recipe.resultItem);
-
-            playerInventory.AddItem(newItem);
+            Debug.LogWarning($"{logTag} ⚠️ Skipped runtime instantiation for ScriptableObject '{recipe.resultItem.ItemName}'.");
+            // To support stackable crafting, prefab-based or asset registry could be integrated here
         }
     }
 

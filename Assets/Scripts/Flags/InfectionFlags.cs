@@ -1,9 +1,12 @@
-public enum InfectionFlags
+namespace Flags
 {
-    Rabid,
-    FungalGrowth,
-    NeuralDecay,
-    AcidBlood,
-    BlackVein,
-    VoiceEcho
+    public enum InfectionFlags
+    {
+        Rabid,
+        FungalGrowth,
+        NeuralDecay,
+        AcidBlood,
+        BlackVein,
+        VoiceEcho
+    }
 }

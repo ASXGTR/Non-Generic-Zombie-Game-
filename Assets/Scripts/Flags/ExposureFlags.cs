@@ -1,9 +1,12 @@
-public enum ExposureFlags
+namespace Flags
 {
-    ExtremeHeat,
-    FreezingCold,
-    ProlongedDarkness,
-    Overstimulation,
-    Isolation,
-    UnknownRadiance
+    public enum ExposureFlags
+    {
+        ExtremeHeat,
+        FreezingCold,
+        ProlongedDarkness,
+        Overstimulation,
+        Isolation,
+        UnknownRadiance
+    }
 }

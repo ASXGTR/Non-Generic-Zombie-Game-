@@ -1,7 +1,6 @@
-// File: Assets/Scripts/Combat/DamageSystem.cs
 using UnityEngine;
 
-namespace Game.Combat
+namespace Combat
 {
     public class DamageSystem : MonoBehaviour
     {

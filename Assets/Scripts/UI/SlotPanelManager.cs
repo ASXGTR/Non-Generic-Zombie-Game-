@@ -66,9 +66,9 @@ public class SlotPanelManager : MonoBehaviour
         string lowerSlot = slotName.ToLower();
         return item.itemType switch
         {
-            ItemType.Clothing => item.clothingSlot.ToString().ToLower() == lowerSlot,
-            ItemType.Bag => lowerSlot == "backpack",
-            ItemType.Holster => lowerSlot == "holster",
+            ItemTypeEnum.Clothing => item.clothingSlot.ToString().ToLower() == lowerSlot,
+            ItemTypeEnum.Bag => lowerSlot == "backpack",
+            ItemTypeEnum.Holster => lowerSlot == "holster",
             _ => false
         };
     }

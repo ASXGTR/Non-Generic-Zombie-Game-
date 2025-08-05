@@ -1,4 +1,4 @@
-namespace Survival.Core.State
+namespace Flags
 {
     [System.Serializable]
     public class GameStateFlags

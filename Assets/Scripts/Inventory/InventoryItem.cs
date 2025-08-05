@@ -1,30 +1,33 @@
-using Game.Inventory;
+// File: Assets/Scripts/Inventory/InventoryItem.cs
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Inventory/Item")]
-public class InventoryItem : ScriptableObject
+namespace Game.Inventory
 {
-    [Header("Basic Info")]
-    public string ItemName;
-    public Sprite Icon;
-    public ItemType Type;
-    [TextArea] public string Description;
-
-    [Header("Stacking")]
-    public bool IsStackable = false;
-    public int MaxStackSize = 1;
-
-    [Header("Metadata")]
-    public string Category;
-    public int BaseValue;
-    public bool IsQuestItem;
-    public bool IsConsumable;
-
-    [Header("Debug")]
-    public bool ShowInDebugLog = false;
-
-    public override string ToString()
+    [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Inventory/Item")]
+    public class InventoryItem : ScriptableObject
     {
-        return $"{ItemName} ({Type}) - {Category} | Stackable: {IsStackable} x{MaxStackSize}";
+        [Header("Basic Info")]
+        public string ItemName;
+        public Sprite Icon;
+        public ItemTypeEnum Type;
+        [TextArea] public string Description;
+
+        [Header("Stacking")]
+        public bool IsStackable = false;
+        public int MaxStackSize = 1;
+
+        [Header("Metadata")]
+        public string Category;
+        public int BaseValue;
+        public bool IsQuestItem;
+        public bool IsConsumable;
+
+        [Header("Debug")]
+        public bool ShowInDebugLog = false;
+
+        public override string ToString()
+        {
+            return $"{ItemName} ({Type}) - {Category} | Stackable: {IsStackable} x{MaxStackSize}";
+        }
     }
 }

@@ -1,7 +1,6 @@
-// File: Assets/Scripts/Flags/FlagGroupLoader.cs
 using UnityEngine;
 
-namespace Game.DialogueSystem
+namespace Flags
 {
     [System.Serializable]
     public class FlagGroup

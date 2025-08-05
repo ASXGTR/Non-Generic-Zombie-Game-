@@ -1,7 +1,6 @@
-// File: Assets/Scripts/Flags/FlagSetter.cs
 using UnityEngine;
 
-namespace Game.DialogueSystem
+namespace Flags
 {
     public class FlagSetter : MonoBehaviour
     {

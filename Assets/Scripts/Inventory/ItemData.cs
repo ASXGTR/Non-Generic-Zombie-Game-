@@ -28,7 +28,7 @@ namespace Game.Inventory
         public Sprite equippedSprite;
 
         [Header("⚙️ Item Properties")]
-        public ItemType itemType;
+        public ItemTypeEnum itemType;
         public Rarity rarity;
         public float condition = 100f;
         public float weight = 1f;
@@ -59,7 +59,7 @@ namespace Game.Inventory
         // ──────────────────────────────────────
 
         public bool IsEquippable =>
-            itemType == ItemType.Clothing || itemType == ItemType.Holster;
+            itemType == ItemTypeEnum.Clothing || itemType == ItemTypeEnum.Holster;
 
         public bool IsStackable =>
             !isContainer && condition == 100f && weight < 5f;

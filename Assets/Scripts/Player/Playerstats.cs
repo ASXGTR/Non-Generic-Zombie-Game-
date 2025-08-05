@@ -1,36 +1,41 @@
-﻿using UnityEngine;
+﻿// File: Assets/Scripts/Player/PlayerStats.cs
+using UnityEngine;
+using Game.Inventory;
 
-public class PlayerStats : MonoBehaviour
+namespace Player
 {
-    [Header("Core Stats")]
-    public int health;
-    public int stamina;
-    public int strength;
-
-    private EquipmentManager equipmentManager;
-
-    void Awake()
+    public class PlayerStats : MonoBehaviour
     {
+        [Header("Core Stats")]
+        public int health;
+        public int stamina;
+        public int strength;
+
+        private EquipmentManager equipmentManager;
+
+        void Awake()
+        {
 #if UNITY_2023_1_OR_NEWER
-        equipmentManager = Object.FindFirstObjectByType<EquipmentManager>();
+            equipmentManager = Object.FindFirstObjectByType<EquipmentManager>();
 #else
-        equipmentManager = FindObjectOfType<EquipmentManager>();
+            equipmentManager = FindObjectOfType<EquipmentManager>();
 #endif
+        }
+
+        public InventoryItem GetEquippedItem(string slotName)
+        {
+            if (equipmentManager == null || string.IsNullOrEmpty(slotName))
+                return null;
+
+            return equipmentManager.GetEquippedItem(slotName);
+        }
+
+        public bool HasEquippedWeapon()
+        {
+            var weapon = GetEquippedItem("Weapon");
+            return weapon != null;
+        }
+
+        // Other stat-related methods...
     }
-
-    public InventoryItem GetEquippedItem(string slotName)
-    {
-        if (equipmentManager == null || string.IsNullOrEmpty(slotName))
-            return null;
-
-        return equipmentManager.GetEquippedItem(slotName);
-    }
-
-    public bool HasEquippedWeapon()
-    {
-        InventoryItem weapon = GetEquippedItem("Weapon");
-        return weapon != null;
-    }
-
-    // Other stat-related methods...
 }

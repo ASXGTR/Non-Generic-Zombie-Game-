@@ -1,8 +1,7 @@
-// File: Assets/Scripts/Debug/FlagDisplayDebugger.cs
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.DialogueSystem
+namespace Debug
 {
     public class FlagDisplayDebugger : MonoBehaviour
     {
