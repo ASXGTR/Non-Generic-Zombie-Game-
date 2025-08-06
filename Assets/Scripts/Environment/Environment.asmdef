@@ -1,7 +1,16 @@
 {
   "name": "Environment",
-  "references": [],
+  "references": [
+    "Flags",
+    "Inventory"
+  ],
   "includePlatforms": [],
   "excludePlatforms": [],
-  "autoReferenced": true
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

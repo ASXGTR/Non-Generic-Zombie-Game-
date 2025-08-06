@@ -1,0 +1,10 @@
+{
+  "name": "Combat",
+  "references": [
+    "Player",
+    "Core"
+  ],
+  "autoReferenced": true,
+  "includePlatforms": [],
+  "excludePlatforms": []
+}

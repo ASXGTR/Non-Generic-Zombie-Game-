@@ -1,0 +1,8 @@
+{
+  "name": "World",
+  "references": [
+    "Inventory",
+    "Flags"
+  ],
+  "autoReferenced": true
+}

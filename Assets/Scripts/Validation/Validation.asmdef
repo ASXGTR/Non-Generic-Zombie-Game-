@@ -1,0 +1,8 @@
+{
+  "name": "Validation",
+  "references": [
+    "Narrative",
+    "Flags"
+  ],
+  "autoReferenced": true
+}

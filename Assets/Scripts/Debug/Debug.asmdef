@@ -1,16 +1,12 @@
 {
-  "name": "EditorTools",
+  "name": "Debug",
   "references": [
-    "Scene",
-    "Player",
-    "Combat",
-    "Crafting",
-    "Systems",
-    "UI",
     "Inventory",
-    "Core"
+    "Environment",
+    "UI",
+    "Systems"
   ],
-  "includePlatforms": ["Editor"],
+  "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,

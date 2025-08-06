@@ -1,16 +1,10 @@
 {
-  "name": "EditorTools",
+  "name": "Crafting",
   "references": [
-    "Scene",
-    "Player",
-    "Combat",
-    "Crafting",
     "Systems",
-    "UI",
-    "Inventory",
     "Core"
   ],
-  "includePlatforms": ["Editor"],
+  "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,

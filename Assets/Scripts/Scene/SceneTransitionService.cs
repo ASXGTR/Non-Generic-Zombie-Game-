@@ -2,12 +2,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
 
-public interface IFadeOverlay
-{
-    void SetAlpha(float alpha);
-    Color CurrentColor { get; }
-}
-
 [RuntimeService]
 public class SceneTransitionService : ISceneTransitionResponder
 {

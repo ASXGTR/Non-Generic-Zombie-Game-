@@ -1,16 +1,11 @@
 {
-  "name": "EditorTools",
+  "name": "Narrative",
   "references": [
-    "Scene",
-    "Player",
-    "Combat",
-    "Crafting",
-    "Systems",
-    "UI",
-    "Inventory",
+    "DialogueSystem",
+    "Flags",
     "Core"
   ],
-  "includePlatforms": ["Editor"],
+  "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,

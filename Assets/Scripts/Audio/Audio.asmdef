@@ -1,16 +1,7 @@
 {
-  "name": "EditorTools",
-  "references": [
-    "Scene",
-    "Player",
-    "Combat",
-    "Crafting",
-    "Systems",
-    "UI",
-    "Inventory",
-    "Core"
-  ],
-  "includePlatforms": ["Editor"],
+  "name": "Audio",
+  "references": [],
+  "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,

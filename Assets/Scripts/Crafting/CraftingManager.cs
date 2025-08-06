@@ -1,5 +1,5 @@
 ﻿using Game.Inventory;
-using Inventory;
+using Game.Core.Shared;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -64,20 +64,5 @@ namespace Crafting
             Debug.LogWarning($"{logTag} ⚠️ Skipped runtime instantiation for ScriptableObject '{recipe.resultItem.ItemName}'.");
             // To support stackable crafting, prefab-based or asset registry could be integrated here
         }
-    }
-
-    [System.Serializable]
-    public class CraftingRecipe
-    {
-        public string recipeName;
-        public ItemData resultItem;
-        public List<CraftingIngredient> requiredIngredients;
-    }
-
-    [System.Serializable]
-    public class CraftingIngredient
-    {
-        public string itemName;
-        public int quantity;
     }
 }

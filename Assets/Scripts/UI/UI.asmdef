@@ -1,16 +1,15 @@
 {
-  "name": "EditorTools",
+  "name": "UI",
   "references": [
-    "Scene",
     "Player",
-    "Combat",
-    "Crafting",
     "Systems",
-    "UI",
-    "Inventory",
+    "Audio",
+    "Flags",
+    "DialogueSystem",
+    "Unity.TextMeshPro",
     "Core"
   ],
-  "includePlatforms": ["Editor"],
+  "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,
