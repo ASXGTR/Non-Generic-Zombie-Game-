@@ -1,9 +1,9 @@
-using Game.Inventory;
-using NUnit.Framework.Interfaces;
+// File: Assets/Scripts/Core/Shared/CraftingRecipe.cs
 using System;
 using System.Collections.Generic;
+using Core.Shared.Models;
 
-namespace Game.Core.Shared
+namespace Core.Shared.Models
 {
     [Serializable]
     public class CraftingRecipe

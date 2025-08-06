@@ -1,5 +1,5 @@
-// File: Assets/Scripts/Inventory/ItemType.cs
-namespace Game.Inventory
+// File: Assets/Scripts/Core/Shared/Enums/ItemTypeEnum.cs
+namespace Core.Shared.Enums
 {
     public enum ItemTypeEnum
     {

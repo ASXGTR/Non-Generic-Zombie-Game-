@@ -1,3 +1,4 @@
+using Core.Shared.Models;
 // File: Assets/Scripts/World/SurvivalClock.cs
 using UnityEngine;
 

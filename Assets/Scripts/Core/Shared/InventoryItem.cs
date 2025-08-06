@@ -1,7 +1,8 @@
-// File: Assets/Scripts/Inventory/InventoryItem.cs
+// File: Assets/Scripts/Core/Shared/InventoryItem.cs
+using Core.Shared.Enums;
 using UnityEngine;
 
-namespace Game.Inventory
+namespace Core.Shared.Models
 {
     [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Inventory/Item")]
     public class InventoryItem : ScriptableObject

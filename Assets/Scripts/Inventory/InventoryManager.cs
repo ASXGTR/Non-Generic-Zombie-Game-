@@ -1,3 +1,4 @@
+using Core.Shared.Models;
 ﻿// File: Assets/Scripts/Inventory/InventoryManager.cs
 using Game.Inventory;
 using System.Collections.Generic;

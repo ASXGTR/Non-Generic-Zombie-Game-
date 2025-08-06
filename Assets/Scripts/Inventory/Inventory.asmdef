@@ -1,8 +1,8 @@
 {
   "name": "Inventory",
   "references": [
-    "Flags",
-    "Core"
+    "Core.Shared",
+    "Core.Shared.Enums"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

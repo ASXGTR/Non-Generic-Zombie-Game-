@@ -1,3 +1,4 @@
+using Core.Shared.Models;
 // File: Assets/Scripts/Inventory/EquipmentManager.cs
 using System.Collections.Generic;
 using UnityEngine;

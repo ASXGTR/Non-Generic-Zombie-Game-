@@ -1,3 +1,4 @@
+using Core.Shared.Models;
 using UnityEngine;
 
 namespace Game.Inventory

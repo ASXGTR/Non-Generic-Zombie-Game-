@@ -1,5 +1,8 @@
-﻿using Game.Inventory;
+using Core.Shared.Enums;
+using Core.Shared.Models;
+using Game.Inventory;
 using System.Collections.Generic;
+using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 using static UnityEditor.Progress;
 
@@ -76,7 +79,7 @@ public class ItemDatabase : MonoBehaviour
     /// <summary>
     /// Get all items matching a rarity level.
     /// </summary>
-    public List<ItemData> GetItemsByRarity(Rarity rarity)
+    public List<ItemData> GetItemsByRarity(ItemRarity rarity)
     {
         return allItems.FindAll(i => i.rarity == rarity);
     }

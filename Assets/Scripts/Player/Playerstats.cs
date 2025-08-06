@@ -1,3 +1,4 @@
+using Core.Shared.Models;
 ﻿// File: Assets/Scripts/Player/PlayerStats.cs
 using UnityEngine;
 using Game.Inventory;

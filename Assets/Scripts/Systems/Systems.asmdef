@@ -1,12 +1,12 @@
 {
   "name": "Systems",
   "references": [
-    "Player",
+    "Core.Shared",
+    "Core.Shared.Enums",
+    "Inventory",
+    "Tools",
     "Audio",
-    "Flags",
-    "Scene",
-    "DialogueSystem",
-    "Core"
+    "Game"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

@@ -2,7 +2,8 @@
   "name": "Crafting",
   "references": [
     "Systems",
-    "Core"
+    "Core",
+    "Core.Shared"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

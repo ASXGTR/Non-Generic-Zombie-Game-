@@ -1,12 +1,6 @@
 {
-  "name": "Player",
-  "references": [
-    "Core.Shared",
-    "Core.Shared.Enums",
-    "Inventory",
-    "Game",
-    "UI"
-  ],
+  "name": "Core.Shared.Enums",
+  "references": [],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

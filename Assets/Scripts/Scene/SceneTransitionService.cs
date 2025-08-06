@@ -1,57 +1,29 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Threading.Tasks;
+using Core.Shared;
 
-[RuntimeService]
-public class SceneTransitionService : ISceneTransitionResponder
+namespace Scene
 {
-    private readonly IFadeOverlay fadeOverlay;
-    private readonly float fadeDuration;
-
-    public SceneTransitionService(IFadeOverlay overlay, float duration = 1f)
+    /// <summary>
+    /// Enables or disables a target GameObject based on a StoryFlag.
+    /// Used for conditional prefab activation in scenes.
+    /// </summary>
+    public class PreFabStoryBinder : MonoBehaviour
     {
-        fadeOverlay = overlay;
-        fadeDuration = duration;
-    }
+        [SerializeField] private string flagName;
+        [SerializeField] private GameObject targetObject;
 
-    public async Task FadeInAsync()
-    {
-        Debug.Log("[SceneTransitionService] Begin fade-in.");
-        float timer = fadeDuration;
-
-        while (timer > 0f)
+        private void Awake()
         {
-            timer -= Time.deltaTime;
-            float alpha = Mathf.Lerp(1f, 0f, 1f - (timer / fadeDuration));
-            fadeOverlay.SetAlpha(alpha);
-            await Task.Yield();
+            if (targetObject == null || string.IsNullOrEmpty(flagName))
+            {
+                Debug.LogWarning("[PreFabStoryBinder] Missing target or flag name.");
+                return;
+            }
+
+            bool shouldEnable = StoryFlags.IsSet(flagName);
+            targetObject.SetActive(shouldEnable);
+
+            Debug.Log($"[PreFabStoryBinder] Flag '{flagName}' is {(shouldEnable ? "set" : "unset")}. Target '{targetObject.name}' {(shouldEnable ? "enabled" : "disabled")}.");
         }
-
-        fadeOverlay.SetAlpha(0f);
-        Debug.Log("[SceneTransitionService] Fade-in complete.");
-    }
-
-    public async Task FadeOutAndLoadAsync(string sceneName)
-    {
-        Debug.Log($"[SceneTransitionService] Begin fade-out to scene: {sceneName}");
-        float timer = 0f;
-
-        while (timer < fadeDuration)
-        {
-            timer += Time.deltaTime;
-            float alpha = Mathf.Lerp(0f, 1f, timer / fadeDuration);
-            fadeOverlay.SetAlpha(alpha);
-            await Task.Yield();
-        }
-
-        fadeOverlay.SetAlpha(1f);
-        Debug.Log("[SceneTransitionService] Fade-out complete. Loading scene...");
-        SceneManager.LoadScene(sceneName);
-    }
-
-    public async void OnSceneLoaded(string sceneName)
-    {
-        Debug.Log($"[SceneTransitionService] Scene loaded: {sceneName}. Triggering auto fade-in.");
-        await FadeInAsync();
     }
 }

@@ -1,15 +1,15 @@
-using UnityEngine;
 using System.Collections.Generic;
 
 namespace Flags
 {
-    [CreateAssetMenu(fileName = "StoryFlags", menuName = "Game/StoryFlags")]
-    public class StoryFlags : ScriptableObject
+    public static class StoryFlags
     {
-        public Dictionary<string, bool> flags = new();
+        private static readonly Dictionary<string, bool> flags = new();
 
-        public bool GetFlag(string key) => flags.ContainsKey(key) && flags[key];
+        public static bool GetFlag(string key) => flags.ContainsKey(key) && flags[key];
 
-        public void SetFlag(string key, bool value) => flags[key] = value;
+        public static void SetFlag(string key, bool value) => flags[key] = value;
+
+        public static void Clear() => flags.Clear();
     }
 }

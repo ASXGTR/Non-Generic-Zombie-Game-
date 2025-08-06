@@ -1,3 +1,4 @@
+using Core.Shared.Models;
 // File: Assets/Scripts/UI/TypewriterDisplay.cs
 using UnityEngine;
 using UnityEngine.UI;

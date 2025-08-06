@@ -1,13 +1,12 @@
 {
   "name": "UI",
   "references": [
-    "Player",
+    "Core.Shared",
+    "Core.Shared.Enums",
+    "Inventory",
     "Systems",
-    "Audio",
-    "Flags",
-    "DialogueSystem",
-    "Unity.TextMeshPro",
-    "Core"
+    "Game",
+    "Audio"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

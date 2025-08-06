@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using Unity.Android.Gradle.Manifest;
+using UnityEditor.Graphs;
 using UnityEngine;
 
-namespace Game.Inventory
+namespace Core.Shared.Models
 {
     [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
     public class ItemData : ScriptableObject
@@ -28,16 +30,16 @@ namespace Game.Inventory
         public Sprite equippedSprite;
 
         [Header("⚙️ Item Properties")]
-        public ItemTypeEnum itemType;
-        public Rarity rarity;
+        // public ItemTypeEnum itemType;
+        // public Rarity rarity;
         public float condition = 100f;
         public float weight = 1f;
 
         [Header("👕 Equip & Slot Info")]
-        public ClothingSlot clothingSlot;
-        public SlotType slotType;
-        public GearSlotType gearSlotType;
-        public int slotFootprint = 1; // For grid-based storage
+        // public ClothingSlot clothingSlot;
+        // public SlotType slotType;
+        // public GearSlotType gearSlotType;
+        public int slotFootprint = 1;
 
         [Header("🔥 Cooking")]
         public bool isHot = false;
@@ -47,8 +49,8 @@ namespace Game.Inventory
         public bool isContainer = false;
         public int containerCapacity = 0;
         public int storageSlotCapacity = 0;
-        public int storageCapacity = 0; // 🔧 Added to match InventoryItem
-        public List<SlotType> slotTypes = new();
+        public int storageCapacity = 0;
+        public List<object> slotTypes = new(); // Temporarily use object
 
         [Header("🏷️ Tags & Metadata")]
         [SerializeField] private List<string> tags = new();
@@ -58,8 +60,8 @@ namespace Game.Inventory
         // 🧠 Utility Accessors & Helpers
         // ──────────────────────────────────────
 
-        public bool IsEquippable =>
-            itemType == ItemTypeEnum.Clothing || itemType == ItemTypeEnum.Holster;
+        // public bool IsEquippable =>
+        //     itemType == ItemTypeEnum.Clothing || itemType == ItemTypeEnum.Holster;
 
         public bool IsStackable =>
             !isContainer && condition == 100f && weight < 5f;
@@ -67,8 +69,8 @@ namespace Game.Inventory
         public bool HasStorage =>
             isContainer && containerCapacity > 0;
 
-        public bool AcceptsSlotType(SlotType type) =>
-            slotTypes != null && slotTypes.Contains(type);
+        // public bool AcceptsSlotType(SlotType type) =>
+        //     slotTypes != null && slotTypes.Contains(type);
 
         public bool HasTag(string query) =>
             tags != null && tags.Contains(query);

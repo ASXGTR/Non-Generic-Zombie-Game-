@@ -1,8 +1,7 @@
 {
   "name": "Core.Shared",
   "references": [
-    "Inventory",
-    "Scene"
+    "Core.Shared.Enums"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

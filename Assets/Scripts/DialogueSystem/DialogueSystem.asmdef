@@ -1,16 +1,8 @@
 {
   "name": "DialogueSystem",
   "references": [
-    "Flags",
-    "Core"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "Core.Shared",
+    "Core.Shared.Enums",
+    "Flags"
+  ]
 }

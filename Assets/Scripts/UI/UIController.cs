@@ -1,3 +1,4 @@
+using Core.Shared.Models;
 using Game.UI;
 using UnityEngine;
 using UnityEngine.UI;

@@ -1,3 +1,4 @@
+using Core.Shared.Models;
 namespace Project.Player
 {
     using Game.Inventory;

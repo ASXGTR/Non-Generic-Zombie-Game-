@@ -2,7 +2,8 @@
   "name": "World",
   "references": [
     "Inventory",
-    "Flags"
+    "Flags",
+    "Core.Shared"
   ],
   "autoReferenced": true
 }
