@@ -1,21 +1,19 @@
-using Core.Shared.Models;
-// File: Assets/Scripts/Inventory/EquipmentManager.cs
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Inventory;
+using Core.Shared.Models;
 
 namespace Game.Inventory
 {
     public class EquipmentManager : MonoBehaviour
     {
         [Header("Equipment Slots")]
-        public Dictionary<string, InventoryItem> equippedItems = new();
+        public Dictionary<string, ItemInstance> equippedItems = new();
 
-        public delegate void EquipmentEvent(InventoryItem item);
+        public delegate void EquipmentEvent(ItemInstance item);
         public event EquipmentEvent OnEquip;
         public event EquipmentEvent OnUnequip;
 
-        public void EquipItem(string slotName, InventoryItem item)
+        public void EquipItem(string slotName, ItemInstance item)
         {
             if (item == null || string.IsNullOrEmpty(slotName)) return;
 
@@ -34,7 +32,7 @@ namespace Game.Inventory
             Debug.Log($"Unequipped {removed.ItemName} from {slotName}");
         }
 
-        public InventoryItem GetEquippedItem(string slotName)
+        public ItemInstance GetEquippedItem(string slotName)
         {
             equippedItems.TryGetValue(slotName, out var item);
             return item;
@@ -50,7 +48,7 @@ namespace Game.Inventory
             return false;
         }
 
-        public Dictionary<string, InventoryItem> GetAllEquippedItems() =>
+        public Dictionary<string, ItemInstance> GetAllEquippedItems() =>
             new(equippedItems);
     }
 }

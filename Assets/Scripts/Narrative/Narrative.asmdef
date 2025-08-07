@@ -3,7 +3,10 @@
   "references": [
     "DialogueSystem",
     "Flags",
-    "Core"
+    "Core",
+    "Narrative.Logic",
+    "Narrative.Triggers",
+    "UI.Narrative"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

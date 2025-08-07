@@ -1,27 +1,12 @@
-using System.Collections.Generic;
-using UnityEngine;
-
+// File: Assets/Scripts/Environment/EnvironmentHazardFlags.cs
 namespace Environment.Hazards
 {
-    public class EnvironmentHazardManager : MonoBehaviour
+    public enum EnvironmentHazardFlags
     {
-        public HashSet<EnvironmentHazardFlags> activeHazards = new();
-
-        public void AddHazard(EnvironmentHazardFlags hazard)
-        {
-            activeHazards.Add(hazard);
-            Debug.Log("Hazard detected: " + hazard);
-        }
-
-        public void RemoveHazard(EnvironmentHazardFlags hazard)
-        {
-            if (activeHazards.Contains(hazard))
-            {
-                activeHazards.Remove(hazard);
-                Debug.Log("Hazard resolved: " + hazard);
-            }
-        }
-
-        public bool HasHazard(EnvironmentHazardFlags hazard) => activeHazards.Contains(hazard);
+        None,
+        Fire,
+        Radiation,
+        ToxicGas,
+        // TODO: Add more hazard types as needed
     }
 }

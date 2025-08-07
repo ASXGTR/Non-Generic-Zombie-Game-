@@ -2,7 +2,8 @@
   "name": "Inventory",
   "references": [
     "Core.Shared",
-    "Core.Shared.Enums"
+    "Core.Shared.Enums",
+    "Core.Shared.Models"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

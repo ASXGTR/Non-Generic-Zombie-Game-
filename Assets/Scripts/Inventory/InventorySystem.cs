@@ -1,15 +1,13 @@
+// File: Assets/Scripts/Inventory/InventorySystem.cs
+
+using Core.Shared;
 using Core.Shared.Enums;
 using Core.Shared.Models;
-using Game.Inventory;
 using System.Collections.Generic;
-using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace Game.Inventory
 {
-    /// <summary>
-    /// Global inventory service for stacking, slot compatibility, and item registry.
-    /// </summary>
     [AddComponentMenu("Inventory/Inventory System")]
     public class InventorySystem : MonoBehaviour
     {
@@ -18,42 +16,44 @@ namespace Game.Inventory
         [SerializeField] private int maxSlots = 20;
 
         [Tooltip("Current stacked items across inventory")]
-        [SerializeField] private List<InventorySlot> slots = new();
+        [SerializeField] private List<StackSlot> slots = new();
 
-        public bool AddItem(InventoryItem item, int amount)
+        public bool AddItem(ItemInstance item, int amount)
         {
-            if (item == null)
+            if (item == null || item.Data == null)
             {
                 Debug.LogWarning("[InventorySystem] ⚠️ Tried to add null item.");
                 return false;
             }
 
-            if (!CanPlaceInSlot(item, item.assignedSlotType))
+            var itemName = item.Data.ItemName;
+
+            if (!CanPlaceInSlot(item, item.Data.slotTypes?.Count > 0 && item.Data.slotTypes[0] is ItemSlot s ? s : default))
             {
-                Debug.LogWarning($"[InventorySystem] ❌ Cannot place '{item.ItemName}' in '{item.assignedSlotType}'");
+                Debug.LogWarning($"[InventorySystem] ❌ Cannot place '{itemName}' in assigned slot.");
                 return false;
             }
 
             if (IsItemRegistered(item))
             {
-                Debug.LogWarning($"[InventorySystem] ⛔ Item '{item.ItemName}' already exists.");
+                Debug.LogWarning($"[InventorySystem] ⛔ Item '{itemName}' already exists.");
                 return false;
             }
 
             foreach (var slot in slots)
             {
-                if (slot.item == item && slot.quantity < item.maxStack)
+                if (slot.item == item && slot.quantity < item.Data.MaxStackSize)
                 {
                     slot.Add(amount);
-                    Debug.Log($"[InventorySystem] ➕ Stacked '{item.ItemName}' x{amount}");
+                    Debug.Log($"[InventorySystem] ➕ Stacked '{itemName}' x{amount}");
                     return true;
                 }
             }
 
             if (slots.Count < maxSlots)
             {
-                slots.Add(new InventorySlot { item = item, quantity = amount });
-                Debug.Log($"[InventorySystem] ✅ Added new '{item.ItemName}' x{amount}");
+                slots.Add(new StackSlot { item = item, quantity = amount });
+                Debug.Log($"[InventorySystem] ✅ Added new '{itemName}' x{amount}");
                 return true;
             }
 
@@ -61,55 +61,58 @@ namespace Game.Inventory
             return false;
         }
 
-        public bool TryTransferItem(InventoryItem item, SlotType targetSlot)
+        public bool TryTransferItem(ItemInstance item, ItemSlot targetSlot)
         {
-            if (item == null)
+            if (item == null || item.Data == null)
             {
                 Debug.LogWarning("[InventorySystem] ⚠️ Tried to transfer null item.");
                 return false;
             }
 
+            var itemName = item.Data.ItemName;
+
             if (!CanPlaceInSlot(item, targetSlot))
             {
-                Debug.LogWarning($"[InventorySystem] ❌ Transfer blocked: '{item.ItemName}' → '{targetSlot}'");
+                Debug.LogWarning($"[InventorySystem] ❌ Transfer blocked: '{itemName}' → '{targetSlot}'");
                 return false;
             }
 
             if (IsItemRegistered(item))
             {
-                Debug.LogWarning($"[InventorySystem] ⛔ Item '{item.ItemName}' already in inventory.");
+                Debug.LogWarning($"[InventorySystem] ⛔ Item '{itemName}' already in inventory.");
                 return false;
             }
 
-            slots.Add(new InventorySlot { item = item, quantity = 1 });
-            Debug.Log($"[InventorySystem] 🔄 Transferred '{item.ItemName}' to '{targetSlot}'");
+            slots.Add(new StackSlot { item = item, quantity = 1 });
+            Debug.Log($"[InventorySystem] 🔄 Transferred '{itemName}' to '{targetSlot}'");
             return true;
         }
 
-        public bool CanPlaceInSlot(InventoryItem item, SlotType slotType)
+        public bool CanPlaceInSlot(ItemInstance item, ItemSlot slotType)
         {
-            if (item == null) return false;
+            if (item == null || item.Data == null) return false;
 
-            if (item.IsContainer() && (slotType == SlotType.Clothing || slotType == SlotType.General))
+            var itemName = item.Data.ItemName;
+
+            if (item.IsContainer && (slotType == ItemSlot.Pocket || slotType == ItemSlot.Back))
             {
-                Debug.LogWarning($"[InventorySystem] 🛑 Blocked nested container: '{item.ItemName}'");
+                Debug.LogWarning($"[InventorySystem] 🛑 Blocked nested container: '{itemName}'");
                 return false;
             }
 
-            return ValidateSlotCompatibility(item.itemType, slotType);
+            return ValidateSlotCompatibility(item.Data.Type, slotType);
         }
 
-        private bool ValidateSlotCompatibility(ItemTypeEnum itemType, SlotType slotType) => itemType switch
+        private bool ValidateSlotCompatibility(ItemTypeEnum itemType, ItemSlot slotType) => itemType switch
         {
-            ItemTypeEnum.Handheld => slotType == SlotType.Utility,
-            ItemTypeEnum.Consumable => slotType == SlotType.Food,
-            ItemTypeEnum.Clothing => slotType == SlotType.Clothing,
-            ItemTypeEnum.Holster => slotType == SlotType.Holster,
-            ItemTypeEnum.Bag => slotType == SlotType.General,
+            ItemTypeEnum.Handheld => slotType == ItemSlot.Hands,
+            ItemTypeEnum.Clothing => slotType is ItemSlot.Head or ItemSlot.Body or ItemSlot.Legs or ItemSlot.Feet,
+            ItemTypeEnum.Bag => slotType == ItemSlot.Back,
+            ItemTypeEnum.Consumable => slotType == ItemSlot.Pocket,
             _ => false,
         };
 
-        public bool IsItemRegistered(InventoryItem item) =>
+        public bool IsItemRegistered(ItemInstance item) =>
             item != null && slots.Exists(s => s.item == item);
 
         public void ClearInventory()

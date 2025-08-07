@@ -1,4 +1,6 @@
+// File: Assets/Scripts/Gameplay/Disease/DiseaseDefinition.cs
 using UnityEngine;
+using DiseaseSystem; // Only needed if you want to use DiseaseType
 
 namespace Gameplay.Disease
 {
@@ -11,5 +13,11 @@ namespace Gameplay.Disease
         public float Duration;
         public string[] Symptoms;
         public AudioClip[] SymptomSounds;
+
+        // Optional: Link to enum
+        public DiseaseType Type;
+
+        // Optional: Cure items
+        public string[] CureItemIds;
     }
 }

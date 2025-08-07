@@ -1,5 +1,5 @@
 // File: Assets/Scripts/Core/Shared/Enums/ItemTypeEnum.cs
-namespace Core.Shared.Enums
+namespace Core.Shared
 {
     public enum ItemTypeEnum
     {
@@ -7,6 +7,9 @@ namespace Core.Shared.Enums
         Armor,
         Tool,
         Consumable,
-        Quest
+        Quest,
+        Handheld,
+        Clothing,
+        Bag
     }
 }

@@ -1,6 +1,4 @@
 using Core.Shared.Models;
-﻿// File: Assets/Scripts/Inventory/InventoryManager.cs
-using Game.Inventory;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,11 +9,13 @@ namespace Game.Inventory
     {
         [SerializeField] private List<StackSlot> inventoryGrid = new();
 
-        public void AddItem(InventoryItem item)
+        public void AddItem(ItemInstance item)
         {
             if (item == null || string.IsNullOrEmpty(item.ItemName)) return;
 
-            var existingSlot = inventoryGrid.FirstOrDefault(slot => slot.item != null && slot.item.ItemName == item.ItemName);
+            var existingSlot = inventoryGrid.FirstOrDefault(slot =>
+                slot.item != null && slot.item.Data != null && slot.item.Data.ItemName == item.ItemName);
+
             if (existingSlot != null && item.IsStackable)
             {
                 existingSlot.Add(1);
@@ -38,7 +38,9 @@ namespace Game.Inventory
 
         public void RemoveItem(string itemName)
         {
-            var slot = inventoryGrid.FirstOrDefault(s => s.item != null && s.item.ItemName == itemName);
+            var slot = inventoryGrid.FirstOrDefault(s =>
+                s.item != null && s.item.Data != null && s.item.Data.ItemName == itemName);
+
             if (slot != null)
             {
                 slot.item = null;
@@ -52,21 +54,26 @@ namespace Game.Inventory
         }
 
         public bool HasItem(string itemName) =>
-            inventoryGrid.Any(slot => slot.item != null && slot.item.ItemName == itemName);
+            inventoryGrid.Any(slot =>
+                slot.item != null && slot.item.Data != null && slot.item.Data.ItemName == itemName);
 
-        public InventoryItem GetItem(string itemName) =>
-            inventoryGrid.FirstOrDefault(slot => slot.item != null && slot.item.ItemName == itemName)?.item;
+        public ItemInstance GetItem(string itemName) =>
+            inventoryGrid.FirstOrDefault(slot =>
+                slot.item != null && slot.item.Data != null && slot.item.Data.ItemName == itemName)?.item;
 
-        public List<InventoryItem> GetAllItems() =>
+        public List<ItemInstance> GetAllItems() =>
             inventoryGrid.Where(slot => slot.item != null).Select(slot => slot.item).ToList();
 
         public int CountItemByName(string itemName) =>
-            inventoryGrid.Where(slot => slot.item != null && slot.item.ItemName == itemName).Sum(slot => slot.quantity);
+            inventoryGrid.Where(slot =>
+                slot.item != null && slot.item.Data != null && slot.item.Data.ItemName == itemName)
+            .Sum(slot => slot.quantity);
 
         public void RemoveItemsByName(string itemName, int quantity)
         {
             var remaining = quantity;
-            foreach (var slot in inventoryGrid.Where(s => s.item != null && s.item.ItemName == itemName))
+            foreach (var slot in inventoryGrid.Where(s =>
+                s.item != null && s.item.Data != null && s.item.Data.ItemName == itemName))
             {
                 if (remaining <= 0) break;
 

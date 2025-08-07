@@ -1,13 +1,7 @@
-using Survival.Audio;
-using Survival.Audio.Playback;
-using Survival.Core.Scene;
-using Survival.Core.State;
-using Survival.Core.Time;
-using Survival.UI.Pause;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Survival.Core.Game
+namespace Systems
 {
     public class GameCoordinator : MonoBehaviour
     {
@@ -69,5 +63,39 @@ namespace Survival.Core.Game
         {
             sceneLoader.LoadSceneAsync(sceneName);
         }
+    }
+
+    // 🧩 Stubbed Types (replace with real ones when available)
+    public class GameStateTracker : MonoBehaviour
+    {
+        public void SetState(GameState state) { }
+    }
+
+    public enum GameState { Playing, Paused, GameOver }
+
+    public class TimeManager : MonoBehaviour
+    {
+        public void SetPaused(bool paused) { }
+    }
+
+    public class SceneLoader : MonoBehaviour
+    {
+        public void LoadSceneAsync(string sceneName) { SceneManager.LoadScene(sceneName); }
+    }
+
+    public class AudioCuePlayer : MonoBehaviour
+    {
+        public void PlayCue(AudioCue cue) { }
+    }
+
+    public class AudioCue
+    {
+        public static AudioCue GameOver => new AudioCue();
+    }
+
+    public class PauseController : MonoBehaviour
+    {
+        public void SetVisible(bool visible) { }
+        public void ShowGameOverUI() { }
     }
 }

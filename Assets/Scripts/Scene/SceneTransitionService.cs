@@ -1,5 +1,7 @@
+// File: Assets/Scripts/Scene/PrefabStoryBinder.cs
+
 using UnityEngine;
-using Core.Shared;
+using Flags;
 
 namespace Scene
 {
@@ -7,7 +9,7 @@ namespace Scene
     /// Enables or disables a target GameObject based on a StoryFlag.
     /// Used for conditional prefab activation in scenes.
     /// </summary>
-    public class PreFabStoryBinder : MonoBehaviour
+    public class PrefabStoryBinder : MonoBehaviour
     {
         [SerializeField] private string flagName;
         [SerializeField] private GameObject targetObject;
@@ -16,14 +18,14 @@ namespace Scene
         {
             if (targetObject == null || string.IsNullOrEmpty(flagName))
             {
-                Debug.LogWarning("[PreFabStoryBinder] Missing target or flag name.");
+                Debug.LogWarning("[PrefabStoryBinder] Missing target or flag name.");
                 return;
             }
 
             bool shouldEnable = StoryFlags.IsSet(flagName);
             targetObject.SetActive(shouldEnable);
 
-            Debug.Log($"[PreFabStoryBinder] Flag '{flagName}' is {(shouldEnable ? "set" : "unset")}. Target '{targetObject.name}' {(shouldEnable ? "enabled" : "disabled")}.");
+            Debug.Log($"[PrefabStoryBinder] Flag '{flagName}' is {(shouldEnable ? "set" : "unset")}. Target '{targetObject.name}' {(shouldEnable ? "enabled" : "disabled")}.");
         }
     }
 }

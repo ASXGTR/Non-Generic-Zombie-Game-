@@ -1,15 +1,7 @@
 {
   "name": "Core.Shared",
   "references": [
-    "Core.Shared.Enums"
+    "Core.Shared.Models"
   ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+  "autoReferenced": false
 }

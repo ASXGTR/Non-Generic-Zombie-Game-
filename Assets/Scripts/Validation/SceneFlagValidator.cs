@@ -1,18 +1,19 @@
-// File: Assets/Scripts/Validation/SceneFlagValidator.cs
-using UnityEngine;
+﻿// File: Assets/Scripts/Validation/SceneFlagValidator.cs
 
-namespace Game.DialogueSystem
+using UnityEngine;
+using Flags; // ✅ Added to resolve StoryFlags
+
+namespace Game.Validation // ✅ Corrected namespace
 {
     public class SceneFlagValidator : MonoBehaviour
     {
-        [SerializeField] private StoryFlags flagSystem;
         [SerializeField] private string[] expectedFlags;
 
         private void Awake()
         {
             foreach (string key in expectedFlags)
             {
-                if (!flagSystem.flags.ContainsKey(key))
+                if (!StoryFlags.IsSet(key)) // ✅ Uses public method
                     Debug.LogWarning($"[SceneFlagValidator] Missing expected flag: {key}");
             }
         }

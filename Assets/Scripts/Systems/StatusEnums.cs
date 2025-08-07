@@ -4,3 +4,5 @@ namespace Survival.Status
     public enum VitalsState { Stable, Declining, Critical, Flatlined }
     public enum ConditionFlag { None, Bleeding, Dehydrated, Infected, Poisoned }
 }
+
+

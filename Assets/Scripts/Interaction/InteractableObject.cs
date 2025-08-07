@@ -1,5 +1,8 @@
+﻿// File: Assets/Scripts/Interaction/InteractableObject.cs
+
 using UnityEngine;
 using UnityEngine.Events;
+using Flags; // ✅ Added to resolve InteractionTags
 
 namespace Game.Interaction
 {

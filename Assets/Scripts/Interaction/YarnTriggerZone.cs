@@ -1,16 +1,21 @@
-// File: Assets/Scripts/Interaction/YarnTriggerZone.cs
-using UnityEngine;
+﻿// File: Assets/Scripts/Interaction/YarnTriggerZone.cs
 
-namespace Game.DialogueSystem
+using UnityEngine;
+using DialogueSystem; // ✅ Corrected namespace
+
+namespace Game.Interaction
 {
     public class YarnTriggerZone : MonoBehaviour
     {
         [SerializeField] private DialogueRunner runner;
+        [SerializeField] private string dialogueId;
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
-                runner.RunNextLine();
+            {
+                runner.StartDialogue(dialogueId); // ✅ Uses merged method
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Survival.Core.State
+namespace Systems
 {
     public class GameStateService : MonoBehaviour
     {
@@ -17,5 +17,12 @@ namespace Survival.Core.State
         public void SetPaused(bool value) => Flags.isPaused = value;
         public void SetCombat(bool value) => Flags.isInCombat = value;
         public void SetGameOver(bool value) => Flags.isGameOver = value;
+    }
+
+    public class GameStateFlags
+    {
+        public bool isPaused;
+        public bool isInCombat;
+        public bool isGameOver;
     }
 }

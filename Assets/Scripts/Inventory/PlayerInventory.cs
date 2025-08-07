@@ -1,35 +1,36 @@
+// File: Assets/Scripts/Inventory/PlayerInventory.cs
+
+using Core.Shared;
+using Core.Shared.Enums;
 using Core.Shared.Models;
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace Game.Inventory
 {
-    /// <summary>
-    /// Local inventory component for equipped gear, container logic, and storage delegation.
-    /// </summary>
     [AddComponentMenu("Inventory/Player Inventory")]
     public class PlayerInventory : MonoBehaviour
     {
-        public List<InventoryItem> ownedItems = new();
-        public InventoryItem rightHand;
-        public InventoryItem leftHand;
+        public List<ItemInstance> ownedItems = new();
+        public ItemInstance rightHand;
+        public ItemInstance leftHand;
         public bool auditComplete = false;
 
-        private List<InventoryItem> registeredContainers = new();
+        private List<ItemInstance> registeredContainers = new();
 
         public bool hasRegisteredGearContainers => registeredContainers.Any(item =>
             item != null &&
-            item.isContainer &&
-            item.isEquipped &&
-            item.storageCapacity > 0 &&
-            item.internalStorage != null);
+            item.IsContainer &&
+            item.IsEquipped &&
+            item.StorageCapacity > 0 &&
+            item.InternalStorage != null);
 
         public void AutoEquipStarterGear()
         {
             foreach (var item in ownedItems)
             {
-                if (item.itemType == ItemTypeEnum.Clothing && !item.isEquipped)
+                if (item.Type == ItemTypeEnum.Armor && !item.IsEquipped)
                 {
                     EquipItem(item);
                     Debug.Log($"[PlayerInventory] Auto-equipped: {item.ItemName}");
@@ -51,11 +52,11 @@ namespace Game.Inventory
                     continue;
                 }
 
-                Debug.Log($"[PlayerInventory] 🔍 Audit: {item.ItemName} | isContainer: {item.isContainer} | Cap: {item.storageCapacity} | Equipped: {item.isEquipped}");
+                Debug.Log($"[PlayerInventory] 🔍 Audit: {item.ItemName} | IsContainer: {item.IsContainer} | Cap: {item.StorageCapacity} | Equipped: {item.IsEquipped}");
 
-                if (item.isContainer && item.storageCapacity > 0)
+                if (item.IsContainer && item.StorageCapacity > 0)
                 {
-                    item.internalStorage ??= new List<InventoryItem>();
+                    item.EnsureStorageInitialized(); // semantic noop
                     RegisterContainer(item);
                 }
             }
@@ -64,9 +65,9 @@ namespace Game.Inventory
             Debug.Log($"[PlayerInventory] ✅ Audit complete. Registered: {registeredContainers.Count}");
         }
 
-        private void RegisterContainer(InventoryItem containerGear)
+        private void RegisterContainer(ItemInstance containerGear)
         {
-            if (containerGear == null || containerGear.storageCapacity <= 0)
+            if (containerGear == null || containerGear.StorageCapacity <= 0)
             {
                 Debug.LogWarning($"[PlayerInventory] ⚠️ Invalid container: {containerGear?.ItemName}");
                 return;
@@ -79,26 +80,26 @@ namespace Game.Inventory
             }
         }
 
-        public void EquipItem(InventoryItem item)
+        public void EquipItem(ItemInstance item)
         {
-            if (item == null || item.itemType != ItemTypeEnum.Clothing)
+            if (item == null || item.Type != ItemTypeEnum.Armor)
             {
                 Debug.LogWarning($"[PlayerInventory] ❌ Cannot equip: {item?.ItemName}");
                 return;
             }
 
-            item.isEquipped = true;
+            item.IsEquipped = true;
 
             if (!ownedItems.Contains(item))
                 ownedItems.Add(item);
 
-            item.internalStorage ??= new List<InventoryItem>();
+            item.EnsureStorageInitialized(); // semantic noop
             RegisterContainer(item);
 
             Debug.Log($"[PlayerInventory] 🧥 Equipped: {item.ItemName}");
         }
 
-        public void AddItem(InventoryItem item)
+        public void AddItem(ItemInstance item)
         {
             if (item == null)
             {
@@ -110,11 +111,8 @@ namespace Game.Inventory
 
             foreach (var gear in registeredContainers)
             {
-                gear.internalStorage ??= new List<InventoryItem>();
-
-                if (gear.internalStorage.Count < gear.storageCapacity)
+                if (gear.TryAddToStorage(item))
                 {
-                    gear.internalStorage.Add(item);
                     Debug.Log($"[PlayerInventory] ✅ Stored '{item.ItemName}' in '{gear.ItemName}'");
                     return;
                 }
@@ -123,31 +121,28 @@ namespace Game.Inventory
             Debug.LogWarning($"[PlayerInventory] ❌ No available storage for '{item.ItemName}'");
         }
 
-        public List<InventoryItem> GetEquippedGear() =>
-            ownedItems.Where(i => i != null && i.isEquipped).ToList();
+        public List<ItemInstance> GetEquippedGear() =>
+            ownedItems.Where(i => i != null && i.IsEquipped).ToList();
 
-        public ItemData GetEquippedItemBySlotType(GearSlotType slotType) =>
-            ownedItems.FirstOrDefault(i => i != null && i.isEquipped && i.gearSlotType == slotType)?.data;
-
-        public List<InventoryItem> GetActiveStorageGear() => registeredContainers;
+        public List<ItemInstance> GetActiveStorageGear() => registeredContainers;
 
         public void PrintStorageDebug()
         {
             foreach (var gear in registeredContainers)
             {
-                int used = gear.internalStorage?.Count ?? 0;
-                Debug.Log($"[PlayerInventory] {gear.ItemName}: {used}/{gear.storageCapacity}");
+                int used = gear.InternalStorage?.Count ?? 0;
+                Debug.Log($"[PlayerInventory] {gear.ItemName}: {used}/{gear.StorageCapacity}");
             }
         }
 
-        public List<InventoryItem> GetAllItems()
+        public List<ItemInstance> GetAllItems()
         {
-            List<InventoryItem> all = new(ownedItems);
+            List<ItemInstance> all = new(ownedItems);
 
             foreach (var gear in registeredContainers)
             {
-                if (gear?.internalStorage != null)
-                    all.AddRange(gear.internalStorage);
+                if (gear?.InternalStorage != null)
+                    all.AddRange(gear.InternalStorage);
             }
 
             return all;

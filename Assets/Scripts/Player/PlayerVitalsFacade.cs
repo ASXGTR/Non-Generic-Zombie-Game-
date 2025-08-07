@@ -1,5 +1,5 @@
-using Core.Shared.Models;
 using UnityEngine;
+using Systems;
 
 public class PlayerVitalsFacade : MonoBehaviour
 {
@@ -18,6 +18,7 @@ public class PlayerVitalsFacade : MonoBehaviour
     public float Fatigue => survivalStats?.Fatigue ?? 0f;
 
     public void ApplyDamage(float amount) => vitalsManager?.ApplyDamage(amount);
+
     public void Consume(Item item)
     {
         vitalsManager?.ApplyItemEffects(item);

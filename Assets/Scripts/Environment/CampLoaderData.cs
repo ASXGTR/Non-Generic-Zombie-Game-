@@ -1,13 +1,4 @@
-namespace Environment.Data
-{
-    public static class CampDataLoader
-    {
-        public static void Load(CampData data)
-        {
-            // Placeholder loading logic
-        }
-    }
-}
+// File: Assets/Scripts/Environment/CampLoaderData.cs
 namespace Environment.Data
 {
     public static class CampDataLoader
