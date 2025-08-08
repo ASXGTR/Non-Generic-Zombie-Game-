@@ -2,8 +2,7 @@ using Core.Shared.Models;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using Inventory.DataModels;
-using Systems.Equipment;
+using Game.Inventory;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -12,19 +11,19 @@ using UnityEditor;
 public class GearSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDropHandler
 {
     [Header("Slot Settings")]
-    public GearType type;
+    public string slotName; // e.g. "Helmet", "Boots"
     public Image icon;
     public Button button;
 
-    private GearData currentGear;
-    private IGearManager gearManager;
+    private ItemInstance currentItem;
+    private EquipmentManager equipmentManager;
     private bool isHovered;
 
     void Awake()
     {
-        gearManager = Object.FindFirstObjectByType<GearManager>();
-        if (gearManager == null)
-            Debug.LogError("GearManager not found. GearSlotUI will not function correctly.");
+        equipmentManager = Object.FindFirstObjectByType<EquipmentManager>();
+        if (equipmentManager == null)
+            Debug.LogError("EquipmentManager not found. GearSlotUI will not function correctly.");
 
         if (button != null)
             button.onClick.AddListener(OnClick);
@@ -34,20 +33,25 @@ public class GearSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         ClearSlot();
     }
 
-    public void SetGear(GearData gear)
+    public void SetGear(ItemInstance item)
     {
-        currentGear = gear;
+        currentItem = item;
 
-        if (icon != null)
+        if (icon != null && item?.Data?.icon != null)
         {
-            icon.sprite = gear.icon;
+            icon.sprite = item.Data.icon;
             icon.enabled = true;
+        }
+        else if (icon != null)
+        {
+            icon.sprite = null;
+            icon.enabled = false;
         }
     }
 
     public void ClearSlot()
     {
-        currentGear = null;
+        currentItem = null;
 
         if (icon != null)
         {
@@ -58,15 +62,17 @@ public class GearSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     private void OnClick()
     {
-        if (gearManager == null) return;
+        if (equipmentManager == null || string.IsNullOrEmpty(slotName)) return;
 
-        if (currentGear != null)
+        if (currentItem != null)
         {
-            gearManager.Unequip(type);
+            equipmentManager.UnequipItem(slotName);
+            ClearSlot();
         }
         else
         {
-            gearManager.OpenEquipMenu(type);
+            Debug.Log($"Open equip menu for slot: {slotName}");
+            // You can implement a UI popup or selection logic here
         }
     }
 
@@ -85,9 +91,10 @@ public class GearSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnDrop(PointerEventData eventData)
     {
         var dragged = eventData.pointerDrag?.GetComponent<DraggableGearIcon>();
-        if (dragged != null && dragged.Gear != null && gearManager != null)
+        if (dragged?.ItemInstance != null && equipmentManager != null && !string.IsNullOrEmpty(slotName))
         {
-            gearManager.Equip(type, dragged.Gear);
+            equipmentManager.EquipItem(slotName, dragged.ItemInstance);
+            SetGear(dragged.ItemInstance);
         }
     }
 
@@ -98,7 +105,7 @@ public class GearSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireCube(transform.position, new Vector3(100, 100, 0));
-        Handles.Label(transform.position + Vector3.up * 60, $"GearSlot: {type}", EditorStyles.boldLabel);
+        Handles.Label(transform.position + Vector3.up * 60, $"GearSlot: {slotName}", EditorStyles.boldLabel);
     }
 #endif
 }

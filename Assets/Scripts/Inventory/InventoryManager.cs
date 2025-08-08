@@ -7,7 +7,19 @@ namespace Game.Inventory
 {
     public class InventoryManager : MonoBehaviour
     {
+        public static InventoryManager Instance { get; private set; }
+
         [SerializeField] private List<StackSlot> inventoryGrid = new();
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+        }
 
         public void AddItem(ItemInstance item)
         {

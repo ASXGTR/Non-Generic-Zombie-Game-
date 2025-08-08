@@ -1,4 +1,4 @@
-using Core.Shared.Models;
+﻿using Core.Shared.Models;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,19 +20,21 @@ public class SlotPanelManager : MonoBehaviour
     [Header("Default Icon")]
     public Sprite defaultIcon;
 
-    private Inventory inventory;
+    private EquipmentManager equipmentManager;
 
     void Awake()
     {
-        inventory = Object.FindFirstObjectByType<Inventory>();
-        if (inventory == null)
+        equipmentManager = Object.FindFirstObjectByType<EquipmentManager>();
+        if (equipmentManager == null)
         {
-            Debug.LogError("[SlotPanelManager] Inventory not found.");
+            Debug.LogError("[SlotPanelManager] EquipmentManager not found.");
             return;
         }
 
         RegisterSlotButtons();
-        SyncIconsFromEquippedItems();
+        bool success = SyncIconsFromEquippedItems(); // ✅ Fix for CS0029
+        if (!success)
+            Debug.LogWarning("[SlotPanelManager] One or more icons failed to sync.");
     }
 
     void RegisterSlotButtons()
@@ -55,42 +57,56 @@ public class SlotPanelManager : MonoBehaviour
 
     void OnSlotClicked(string slotName)
     {
-        Item heldItem = inventory.rightHand ?? inventory.leftHand;
+        ItemInstance heldItem = GetHeldItem(); // Replace with your actual logic
         if (heldItem == null || !IsItemValidForSlot(heldItem, slotName)) return;
 
-        if (inventory.EquipItem(heldItem))
-            UpdateSlotIcon(slotName, heldItem);
+        equipmentManager.EquipItem(slotName, heldItem); // ✅ No longer treated as bool
+
+        bool updated = UpdateSlotIcon(slotName, heldItem);
+        if (!updated)
+            Debug.LogWarning($"[SlotPanelManager] Failed to update icon for slot: {slotName}");
     }
 
-    bool IsItemValidForSlot(Item item, string slotName)
+    bool IsItemValidForSlot(ItemInstance item, string slotName)
     {
-        string lowerSlot = slotName.ToLower();
-        return item.itemType switch
-        {
-            ItemTypeEnum.Clothing => item.clothingSlot.ToString().ToLower() == lowerSlot,
-            ItemTypeEnum.Bag => lowerSlot == "backpack",
-            ItemTypeEnum.Holster => lowerSlot == "holster",
-            _ => false
-        };
+        if (item.Data == null || item.Data.slotTypes == null) return false;
+        return item.Data.slotTypes.Exists(s => s.ToString().ToLower() == slotName.ToLower());
     }
 
-    void UpdateSlotIcon(string slotName, Item item)
+    bool UpdateSlotIcon(string slotName, ItemInstance item)
     {
         SlotReference slotRef = equipmentSlots.Find(s => s.slotName.Equals(slotName, System.StringComparison.OrdinalIgnoreCase));
-        if (slotRef == null || slotRef.iconImage == null) return;
+        if (slotRef == null || slotRef.iconImage == null || item.Data == null) return false;
 
-        Sprite iconToUse = item.EquippedSprite ?? item.icon ?? defaultIcon;
+        Sprite iconToUse = item.Data.equippedSprite ?? item.Data.icon ?? defaultIcon;
         slotRef.iconImage.sprite = iconToUse;
         slotRef.iconImage.enabled = true;
+        return true;
     }
 
-    void SyncIconsFromEquippedItems()
+    bool SyncIconsFromEquippedItems()
     {
-        foreach (var gear in inventory.GetEquippedGear())
+        bool allSuccessful = true;
+
+        foreach (var kvp in equipmentManager.GetAllEquippedItems())
         {
-            if (gear?.data == null) continue;
-            string slot = gear.clothingSlot.ToString().ToLower();
-            UpdateSlotIcon(slot, gear);
+            var gear = kvp.Value;
+            if (gear?.Data == null) continue;
+
+            bool updated = UpdateSlotIcon(kvp.Key, gear);
+            if (!updated)
+            {
+                Debug.LogWarning($"[SlotPanelManager] Failed to sync icon for slot: {kvp.Key}");
+                allSuccessful = false;
+            }
         }
+
+        return allSuccessful;
+    }
+
+    ItemInstance GetHeldItem()
+    {
+        // Placeholder: replace with your actual logic to get the item the player is holding
+        return null;
     }
 }

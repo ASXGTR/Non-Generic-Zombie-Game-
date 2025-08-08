@@ -1,97 +1,64 @@
 using Core.Shared.Models;
-using Game.Inventory;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
+using UnityEngine.EventSystems;
 
-namespace Game.UI
+public class InventoryUISlot : MonoBehaviour
 {
-	/// <summary>
-	/// UI slot for drag-drop behavior, item assignment, and lock state.
-	/// </summary>
-	public class InventoryUISlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
-	{
-		[Header("Slot References")]
-		[SerializeField] private Transform itemAnchor;
-		[SerializeField] private Image highlight;
+    [Header("UI References")]
+    [SerializeField] private Image icon;
+    [SerializeField] private TMP_Text quantityText;
+    [SerializeField] private Button useButton;
+    [SerializeField] private Button dropButton;
 
-		[Header("Slot State")]
-		[SerializeField] private InventoryItem assignedItem;
-		[SerializeField] private bool isLocked;
+    private ItemInstance item;
 
-		public InventoryItem AssignedItem => assignedItem;
+    /// <summary>Sets the item and updates visuals.</summary>
+    public void SetItem(ItemInstance newItem, int quantity = 1)
+    {
+        item = newItem;
 
-		private Color defaultHighlightColor;
-		private readonly Color hoverColor = new(0.9f, 0.9f, 1f, 1f);
+        if (item != null && item.Data != null)
+        {
+            icon.sprite = item.Data.icon;
+            icon.enabled = true;
+            quantityText.text = quantity > 1 ? quantity.ToString() : "";
+        }
+        else
+        {
+            ClearSlot();
+        }
+    }
 
-		private void Awake()
-		{
-			if (highlight != null)
-				defaultHighlightColor = highlight.color;
-		}
+    /// <summary>Initializes the slot with item and action callbacks.</summary>
+    public void Setup(ItemInstance newItem, System.Action onUse, System.Action onDrop)
+    {
+        SetItem(newItem);
 
-		public void OnDrop(PointerEventData eventData)
-		{
-			if (isLocked || eventData.pointerDrag == null)
-			{
-				Debug.Log($"[InventoryUISlot] Drop rejected: Locked={isLocked} or no item.");
-				return;
-			}
+        if (useButton != null)
+        {
+            useButton.onClick.RemoveAllListeners();
+            useButton.onClick.AddListener(() => onUse?.Invoke());
+        }
 
-			var draggable = eventData.pointerDrag.GetComponent<DraggableItem>();
-			if (draggable?.Item == null)
-			{
-				Debug.LogWarning("[InventoryUISlot] Invalid drop: missing DraggableItem or item reference.");
-				return;
-			}
+        if (dropButton != null)
+        {
+            dropButton.onClick.RemoveAllListeners();
+            dropButton.onClick.AddListener(() => onDrop?.Invoke());
+        }
+    }
 
-			if (ValidateItem(draggable.Item))
-			{
-				AssignItem(draggable.Item);
-				draggable.OnSlotAssigned(this);
-			}
-			else
-			{
-				Debug.Log($"[InventoryUISlot] Item rejected: {draggable.Item.name}");
-			}
-		}
+    public void ClearSlot()
+    {
+        item = null;
+        icon.sprite = null;
+        icon.enabled = false;
+        quantityText.text = "";
 
-		public void AssignItem(InventoryItem item)
-		{
-			assignedItem = item;
-			item.transform.SetParent(itemAnchor, false);
-			item.transform.localPosition = Vector3.zero;
-			Debug.Log($"[InventoryUISlot] Assigned: {item.name}");
-		}
+        if (useButton != null) useButton.onClick.RemoveAllListeners();
+        if (dropButton != null) dropButton.onClick.RemoveAllListeners();
+    }
 
-		public bool ValidateItem(InventoryItem item) => item != null;
-
-		public void ClearSlot()
-		{
-			if (assignedItem != null)
-			{
-				Destroy(assignedItem.gameObject);
-				assignedItem = null;
-				Debug.Log("[InventoryUISlot] Slot cleared.");
-			}
-		}
-
-		public void LockSlot(bool locked)
-		{
-			isLocked = locked;
-			Debug.Log($"[InventoryUISlot] Lock state changed: {locked}");
-		}
-
-		public void OnPointerEnter(PointerEventData eventData)
-		{
-			if (highlight != null)
-				highlight.color = hoverColor;
-		}
-
-		public void OnPointerExit(PointerEventData eventData)
-		{
-			if (highlight != null)
-				highlight.color = defaultHighlightColor;
-		}
-	}
+    public ItemInstance GetItem() => item;
 }

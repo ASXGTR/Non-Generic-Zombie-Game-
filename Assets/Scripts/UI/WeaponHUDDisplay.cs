@@ -1,7 +1,9 @@
 using Core.Shared.Models;
+using System.Collections.Generic;
+using Systems;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class WeaponHUDDisplay : MonoBehaviour
 {
@@ -26,15 +28,17 @@ public class WeaponHUDDisplay : MonoBehaviour
     {
         if (weaponManager == null) return;
 
-        Weapon active = weaponManager.GetActiveWeapon();
-        Weapon secondary = weaponManager.GetSecondaryWeapon();
+        ItemInstance active = weaponManager.GetActiveWeapon();
+        ItemInstance secondary = weaponManager.GetSecondaryWeapon();
 
-        if (active != null)
+        if (active != null && active.Data != null)
         {
+            string modelName = GetTagValue(active.Data.Tags, "Model") ?? "Default";
+
             magazineAmmoUI.text = $"{active.GetMagazineCount()}";
             totalAmmoUI.text = $"{weaponManager.GetTotalAmmo(active)}";
-            activeWeaponUI.sprite = GetWeaponSprite(active.Model);
-            ammoTypeUI.sprite = GetAmmoSprite(active.Model);
+            activeWeaponUI.sprite = GetWeaponSprite(modelName);
+            ammoTypeUI.sprite = GetAmmoSprite(modelName);
         }
         else
         {
@@ -44,18 +48,34 @@ public class WeaponHUDDisplay : MonoBehaviour
             ammoTypeUI.sprite = emptySlot;
         }
 
-        secondaryWeaponUI.sprite = secondary != null
-            ? GetWeaponSprite(secondary.Model)
-            : emptySlot;
+        if (secondary != null && secondary.Data != null)
+        {
+            string secondaryModel = GetTagValue(secondary.Data.Tags, "Model") ?? "Default";
+            secondaryWeaponUI.sprite = GetWeaponSprite(secondaryModel);
+        }
+        else
+        {
+            secondaryWeaponUI.sprite = emptySlot;
+        }
     }
 
-    private Sprite GetWeaponSprite(WeaponModel model)
+    private string GetTagValue(List<string> tags, string key)
     {
-        return Resources.Load<Sprite>($"{model}_Weapon") ?? emptySlot;
+        foreach (var tag in tags)
+        {
+            if (tag.StartsWith($"{key}:"))
+                return tag.Substring(key.Length + 1);
+        }
+        return null;
     }
 
-    private Sprite GetAmmoSprite(WeaponModel model)
+    private Sprite GetWeaponSprite(string modelName)
     {
-        return Resources.Load<Sprite>($"{model}_Ammo") ?? emptySlot;
+        return Resources.Load<Sprite>($"{modelName}_Weapon") ?? emptySlot;
+    }
+
+    private Sprite GetAmmoSprite(string modelName)
+    {
+        return Resources.Load<Sprite>($"{modelName}_Ammo") ?? emptySlot;
     }
 }

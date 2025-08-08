@@ -1,4 +1,5 @@
 // File: Assets/Scripts/Scene/NarrativeSceneBinder.cs
+
 using UnityEngine;
 using Flags;
 
@@ -10,17 +11,24 @@ namespace Game.DialogueSystem
     /// </summary>
     public class NarrativeSceneBinder : MonoBehaviour
     {
+        [SerializeField] private StoryFlags flagSystem;
         [SerializeField] private string sceneTriggerFlag;
 
         public void MarkSceneEntered()
         {
+            if (flagSystem == null)
+            {
+                Debug.LogWarning("[NarrativeSceneBinder] FlagSystem reference is missing.");
+                return;
+            }
+
             if (string.IsNullOrEmpty(sceneTriggerFlag))
             {
                 Debug.LogWarning("[NarrativeSceneBinder] No flag name provided.");
                 return;
             }
 
-            StoryFlags.Set(sceneTriggerFlag, true);
+            flagSystem.Set(sceneTriggerFlag, true);
             Debug.Log($"[NarrativeSceneBinder] Scene entered. Flag '{sceneTriggerFlag}' set.");
         }
     }

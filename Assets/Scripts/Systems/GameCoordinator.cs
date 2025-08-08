@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using Audio;
 
 namespace Systems
 {
@@ -13,9 +14,9 @@ namespace Systems
         [SerializeField] private SceneLoader sceneLoader;
 
         [Header("Audio")]
-        [SerializeField] private AudioCuePlayer audioPlayer;
-        [SerializeField] private AudioCue pauseCue;
-        [SerializeField] private AudioCue resumeCue;
+        [SerializeField] private AudioCue pauseCue = AudioCue.ButtonClick;
+        [SerializeField] private AudioCue resumeCue = AudioCue.ButtonClick;
+        [SerializeField] private AudioCue gameOverCue = AudioCue.Alert;
 
         [Header("UI")]
         [SerializeField] private PauseController pauseController;
@@ -28,7 +29,6 @@ namespace Systems
             if (timeManager == null) timeManager = FindObjectOfType<TimeManager>();
             if (sceneLoader == null) sceneLoader = FindObjectOfType<SceneLoader>();
             if (pauseController == null) pauseController = FindObjectOfType<PauseController>();
-            if (audioPlayer == null) audioPlayer = FindObjectOfType<AudioCuePlayer>();
         }
 
         private void Update()
@@ -46,7 +46,7 @@ namespace Systems
             pauseController.SetVisible(isPaused);
 
             var cue = isPaused ? pauseCue : resumeCue;
-            audioPlayer.PlayCue(cue);
+            AudioCuePlayer.Instance?.PlayCue(cue);
 
             stateTracker.SetState(isPaused ? GameState.Paused : GameState.Playing);
         }
@@ -56,7 +56,7 @@ namespace Systems
             stateTracker.SetState(GameState.GameOver);
             timeManager.SetPaused(true);
             pauseController.ShowGameOverUI();
-            audioPlayer.PlayCue(AudioCue.GameOver);
+            AudioCuePlayer.Instance?.PlayCue(gameOverCue);
         }
 
         public void LoadScene(string sceneName)
@@ -81,16 +81,6 @@ namespace Systems
     public class SceneLoader : MonoBehaviour
     {
         public void LoadSceneAsync(string sceneName) { SceneManager.LoadScene(sceneName); }
-    }
-
-    public class AudioCuePlayer : MonoBehaviour
-    {
-        public void PlayCue(AudioCue cue) { }
-    }
-
-    public class AudioCue
-    {
-        public static AudioCue GameOver => new AudioCue();
     }
 
     public class PauseController : MonoBehaviour

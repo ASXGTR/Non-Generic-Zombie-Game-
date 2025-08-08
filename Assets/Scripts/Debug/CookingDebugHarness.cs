@@ -1,6 +1,6 @@
 using Game.Inventory;
 using Inventory;
-using Inventory.DataModels;
+using Systems;
 using Systems.Cooking;
 using UnityEngine;
 

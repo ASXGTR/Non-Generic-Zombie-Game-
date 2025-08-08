@@ -1,68 +1,86 @@
-﻿using Game.Inventory;
-using Game.Core.Shared;
-using System.Collections.Generic;
+﻿// File: Assets/Scripts/Crafting/CraftingManager.cs
+
+using Core.Shared.Models;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Crafting
+[AddComponentMenu("Crafting/Crafting Manager")]
+public class CraftingManager : MonoBehaviour
 {
-    /// <summary>
-    /// Handles crafting logic using predefined recipes and available inventory.
-    /// </summary>
-    public class CraftingManager : MonoBehaviour
+    [Header("Dependencies")]
+    private Game.Inventory.InventorySystem inventorySystem;
+    private Game.Inventory.EquipmentManager equipmentManager;
+
+    [Header("Crafting Recipes")]
+    [SerializeField] private List<CraftingRecipe> recipes = new();
+
+    void Awake()
     {
-        [Header("References")]
-        public InventoryManager playerInventory;
-        public List<CraftingRecipe> availableRecipes;
+        inventorySystem = Object.FindFirstObjectByType<Game.Inventory.InventorySystem>();
+        equipmentManager = Object.FindFirstObjectByType<Game.Inventory.EquipmentManager>();
 
-        private const string logTag = "[CraftingManager]";
+        if (inventorySystem == null)
+            Debug.LogError("[CraftingManager] ❌ InventorySystem not found.");
 
-        /// <summary>
-        /// Attempts to craft an item by recipe name.
-        /// </summary>
-        public bool TryCraft(string recipeName)
+        if (equipmentManager == null)
+            Debug.LogWarning("[CraftingManager] ⚠️ EquipmentManager not found. Gear checks will be skipped.");
+    }
+
+    public bool CanCraft(string recipeId)
+    {
+        var recipe = recipes.FirstOrDefault(r => r.id == recipeId);
+        if (recipe == null)
         {
-            CraftingRecipe recipe = availableRecipes.Find(r => r.recipeName == recipeName);
-            if (recipe == null)
-            {
-                Debug.LogWarning($"{logTag} ❌ Recipe '{recipeName}' not found.");
-                return false;
-            }
-
-            if (!HasRequiredIngredients(recipe))
-            {
-                Debug.LogWarning($"{logTag} ⚠️ Missing ingredients for '{recipeName}'.");
-                return false;
-            }
-
-            ConsumeIngredients(recipe);
-            CreateCraftedItem(recipe);
-            Debug.Log($"{logTag} ✅ Crafted: {recipe.resultItem.ItemName}");
-            return true;
+            Debug.LogWarning($"[CraftingManager] ❌ Recipe '{recipeId}' not found.");
+            return false;
         }
 
-        private bool HasRequiredIngredients(CraftingRecipe recipe)
+        foreach (var req in recipe.requiredItems)
         {
-            foreach (var ingredient in recipe.requiredIngredients)
+            int count = inventorySystem.CountItemByName(req.itemName);
+            if (count < req.quantity)
             {
-                int count = playerInventory.CountItemByName(ingredient.itemName);
-                if (count < ingredient.quantity)
+                Debug.LogWarning($"[CraftingManager] ❌ Missing '{req.itemName}' x{req.quantity} (have {count})");
+                return false;
+            }
+        }
+
+        if (recipe.requiredGearSlots != null)
+        {
+            foreach (var gearReq in recipe.requiredGearSlots)
+            {
+                var equipped = equipmentManager?.GetEquippedItem(gearReq.slotName);
+                if (equipped == null || equipped.Data.ItemName != gearReq.itemName)
+                {
+                    Debug.LogWarning($"[CraftingManager] ❌ Missing equipped '{gearReq.itemName}' in '{gearReq.slotName}'");
                     return false;
-            }
-            return true;
-        }
-
-        private void ConsumeIngredients(CraftingRecipe recipe)
-        {
-            foreach (var ingredient in recipe.requiredIngredients)
-            {
-                playerInventory.RemoveItemsByName(ingredient.itemName, ingredient.quantity);
+                }
             }
         }
 
-        private void CreateCraftedItem(CraftingRecipe recipe)
+        return true;
+    }
+
+    public void Craft(string recipeId)
+    {
+        if (!CanCraft(recipeId)) return;
+
+        var recipe = recipes.First(r => r.id == recipeId);
+
+        foreach (var req in recipe.requiredItems)
         {
-            Debug.LogWarning($"{logTag} ⚠️ Skipped runtime instantiation for ScriptableObject '{recipe.resultItem.ItemName}'.");
-            // To support stackable crafting, prefab-based or asset registry could be integrated here
+            inventorySystem.RemoveItemsByName(req.itemName, req.quantity);
         }
+
+        var resultInstance = new ItemInstance
+        {
+            Data = recipe.resultItem,
+            Quantity = recipe.resultQuantity
+        };
+
+        inventorySystem.AddItem(resultInstance, recipe.resultQuantity);
+
+        Debug.Log($"[CraftingManager] 🛠️ Crafted '{recipe.resultItem.ItemName}' x{recipe.resultQuantity}");
     }
 }

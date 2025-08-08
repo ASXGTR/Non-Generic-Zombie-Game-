@@ -15,7 +15,12 @@ namespace Flags
         Dehydrated = 1 << 5,
         Cold = 1 << 6,
         Hot = 1 << 7,
-        Poisoned = 1 << 8
-        // Add more as needed
+        Poisoned = 1 << 8,
+
+        // Mental states
+        Calm = 1 << 9,
+        Anxious = 1 << 10,
+        Angry = 1 << 11,
+        Focused = 1 << 12
     }
 }

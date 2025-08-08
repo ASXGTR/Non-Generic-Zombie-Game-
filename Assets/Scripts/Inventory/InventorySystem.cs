@@ -1,5 +1,3 @@
-// File: Assets/Scripts/Inventory/InventorySystem.cs
-
 using Core.Shared;
 using Core.Shared.Enums;
 using Core.Shared.Models;
@@ -119,6 +117,40 @@ namespace Game.Inventory
         {
             slots.Clear();
             Debug.Log("[InventorySystem] 🧹 Inventory wiped.");
+        }
+
+        // ✅ NEW: Count items by name
+        public int CountItemByName(string itemName)
+        {
+            int total = 0;
+            foreach (var slot in slots)
+            {
+                if (slot.item?.Data?.ItemName == itemName)
+                    total += slot.quantity;
+            }
+            return total;
+        }
+
+        // ✅ NEW: Remove items by name
+        public void RemoveItemsByName(string itemName, int quantity)
+        {
+            int remaining = quantity;
+
+            for (int i = slots.Count - 1; i >= 0 && remaining > 0; i--)
+            {
+                var slot = slots[i];
+                if (slot.item?.Data?.ItemName == itemName)
+                {
+                    int toRemove = Mathf.Min(slot.quantity, remaining);
+                    slot.quantity -= toRemove;
+                    remaining -= toRemove;
+
+                    if (slot.quantity <= 0)
+                        slots.RemoveAt(i);
+                }
+            }
+
+            Debug.Log($"[InventorySystem] 🗑️ Removed '{itemName}' x{quantity}");
         }
     }
 }

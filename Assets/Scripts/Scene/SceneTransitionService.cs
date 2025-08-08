@@ -1,31 +1,41 @@
-// File: Assets/Scripts/Scene/PrefabStoryBinder.cs
+// File: Assets/Scripts/Scene/SceneTransitionServices.cs
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Flags;
 
 namespace Scene
 {
     /// <summary>
-    /// Enables or disables a target GameObject based on a StoryFlag.
-    /// Used for conditional prefab activation in scenes.
+    /// Handles scene transitions with optional flag setting.
+    /// Used for narrative progression and scene control.
     /// </summary>
-    public class PrefabStoryBinder : MonoBehaviour
+    public class SceneTransitionServices : MonoBehaviour
     {
-        [SerializeField] private string flagName;
-        [SerializeField] private GameObject targetObject;
+        [SerializeField] private StoryFlags flagSystem;
+        [SerializeField] private string flagToSetOnTransition;
+        [SerializeField] private string targetSceneName;
 
-        private void Awake()
+        /// <summary>
+        /// Triggers the scene transition and sets the flag if provided.
+        /// </summary>
+        public void Transition()
         {
-            if (targetObject == null || string.IsNullOrEmpty(flagName))
+            if (!string.IsNullOrEmpty(flagToSetOnTransition) && flagSystem != null)
             {
-                Debug.LogWarning("[PrefabStoryBinder] Missing target or flag name.");
-                return;
+                flagSystem.SetFlag(flagToSetOnTransition, true);
+                Debug.Log($"[SceneTransitionServices] Flag '{flagToSetOnTransition}' set.");
             }
 
-            bool shouldEnable = StoryFlags.IsSet(flagName);
-            targetObject.SetActive(shouldEnable);
-
-            Debug.Log($"[PrefabStoryBinder] Flag '{flagName}' is {(shouldEnable ? "set" : "unset")}. Target '{targetObject.name}' {(shouldEnable ? "enabled" : "disabled")}.");
+            if (!string.IsNullOrEmpty(targetSceneName))
+            {
+                Debug.Log($"[SceneTransitionServices] Loading scene '{targetSceneName}'...");
+                SceneManager.LoadScene(targetSceneName);
+            }
+            else
+            {
+                Debug.LogWarning("[SceneTransitionServices] No target scene specified.");
+            }
         }
     }
 }

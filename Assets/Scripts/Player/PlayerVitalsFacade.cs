@@ -1,28 +1,33 @@
-using UnityEngine;
-using Systems;
+﻿using UnityEngine;
+using InventorySystem; // ✅ This brings in your actual Item.cs
 
 public class PlayerVitalsFacade : MonoBehaviour
 {
-    public VitalsManager vitalsManager;
-    public StaminaSystem staminaSystem;
-    public SurvivalStats survivalStats;
+    public int health;
+    public int stamina;
+    public Item equippedItem;
 
-    public float CurrentHealth => vitalsManager?.CurrentHealth ?? 0f;
-    public bool IsAlive => vitalsManager?.IsAlive ?? false;
-
-    public float CurrentStamina => staminaSystem?.CurrentStamina ?? 0f;
-    public bool CanSprint => staminaSystem?.CanSprint ?? false;
-
-    public float Hunger => survivalStats?.Hunger ?? 0f;
-    public float Thirst => survivalStats?.Thirst ?? 0f;
-    public float Fatigue => survivalStats?.Fatigue ?? 0f;
-
-    public void ApplyDamage(float amount) => vitalsManager?.ApplyDamage(amount);
-
-    public void Consume(Item item)
+    public void Initialize(int startingHealth, int startingStamina, Item startingItem)
     {
-        vitalsManager?.ApplyItemEffects(item);
-        survivalStats?.ApplyItemEffects(item);
-        staminaSystem?.Consume(item);
+        health = startingHealth;
+        stamina = startingStamina;
+        equippedItem = startingItem;
+    }
+
+    public void TakeDamage(int amount)
+    {
+        health -= amount;
+        if (health < 0) health = 0;
+    }
+
+    public void UseStamina(int amount)
+    {
+        stamina -= amount;
+        if (stamina < 0) stamina = 0;
+    }
+
+    public void EquipItem(Item newItem)
+    {
+        equippedItem = newItem;
     }
 }

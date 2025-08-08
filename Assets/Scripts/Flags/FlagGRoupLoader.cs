@@ -1,3 +1,5 @@
+// File: Assets/Scripts/Flags/FlagGroupLoader.cs
+
 using UnityEngine;
 
 namespace Flags
@@ -11,16 +13,23 @@ namespace Flags
 
     public class FlagGroupLoader : MonoBehaviour
     {
+        [SerializeField] private StoryFlags flagSystem;
         [SerializeField] private FlagGroup[] groups;
 
         public void LoadGroup(string groupName)
         {
+            if (flagSystem == null)
+            {
+                Debug.LogWarning("FlagSystem reference is missing.");
+                return;
+            }
+
             foreach (var g in groups)
             {
                 if (g.name == groupName)
                 {
                     foreach (var f in g.flags)
-                        StoryFlags.SetFlag(f, true);
+                        flagSystem.SetFlag(f, true);
                     break;
                 }
             }

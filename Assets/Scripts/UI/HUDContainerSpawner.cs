@@ -4,14 +4,14 @@ using Game.Inventory;
 
 public class HUDContainerSpawner : MonoBehaviour
 {
-    private Inventory inventory;
+    private EquipmentManager equipmentManager;
 
     void Start()
     {
-        inventory = Object.FindFirstObjectByType<Inventory>();
-        if (inventory == null)
+        equipmentManager = Object.FindFirstObjectByType<EquipmentManager>();
+        if (equipmentManager == null)
         {
-            Debug.LogError("[HUDContainerSpawner] Inventory not found.");
+            Debug.LogError("[HUDContainerSpawner] EquipmentManager not found.");
             return;
         }
 
@@ -20,11 +20,12 @@ public class HUDContainerSpawner : MonoBehaviour
 
     void InitializeStoragePanels()
     {
-        foreach (var gear in inventory.GetEquippedGear())
+        foreach (var kvp in equipmentManager.GetAllEquippedItems())
         {
-            if (gear == null || !gear.isContainer || gear.storageCapacity <= 0) continue;
+            var gear = kvp.Value;
+            if (gear == null || !gear.IsContainer || gear.StorageCapacity <= 0) continue;
 
-            Debug.Log($"[HUDContainerSpawner] Initializing storage for '{gear.itemName}' with {gear.storageCapacity} slots.");
+            Debug.Log($"[HUDContainerSpawner] Initializing storage for '{gear.ItemName}' with {gear.StorageCapacity} slots.");
             // TODO: Instantiate HUD container prefab via manager or panel spawner
         }
     }
@@ -32,10 +33,11 @@ public class HUDContainerSpawner : MonoBehaviour
     public int GetTotalStorageCapacity()
     {
         int total = 0;
-        foreach (var gear in inventory.GetEquippedGear())
+        foreach (var kvp in equipmentManager.GetAllEquippedItems())
         {
+            var gear = kvp.Value;
             if (gear != null)
-                total += gear.storageCapacity;
+                total += gear.StorageCapacity;
         }
         return total;
     }

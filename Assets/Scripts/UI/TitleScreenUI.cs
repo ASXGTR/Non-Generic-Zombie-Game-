@@ -1,71 +1,53 @@
-using Core.Shared.Models;
-using Survival.Audio;
-using Survival.UI;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using Audio;
 
-namespace Survival.UI.TitleScreen
+public class TitleScreenUI : MonoBehaviour
 {
-    public class TitleScreenUI : MonoBehaviour
+    [Header("🎵 Audio")]
+    [SerializeField] private AudioCue startCue = AudioCue.ButtonClick;
+    [SerializeField] private AudioCue quitCue = AudioCue.ButtonClick;
+    [SerializeField] private AudioSource buttonAudio;
+
+    [Header("🖱️ Buttons")]
+    [SerializeField] private Button startButton;
+    [SerializeField] private Button quitButton;
+
+    private void Awake()
     {
-        [Header("UI Elements")]
-        [SerializeField] private GameObject splashContainer;
-        [SerializeField] private Button startButton;
-        [SerializeField] private Button creditsButton;
-        [SerializeField] private Button quitButton;
+        if (startButton != null)
+            startButton.onClick.AddListener(() => OnStartClicked());
 
-        [Header("Audio")]
-        [SerializeField] private AudioSource buttonAudio;
-        [SerializeField] private AudioCue startCue;
-        [SerializeField] private AudioCue quitCue;
+        if (quitButton != null)
+            quitButton.onClick.AddListener(() => OnQuitClicked());
+    }
 
-        [Header("Transitions")]
-        [SerializeField] private CanvasGroup fader;
-        [SerializeField] private float fadeDuration = 1f;
-        [SerializeField] private string gameSceneName = "MainScene";
+    private void OnStartClicked()
+    {
+        PlayAudio(startCue);
+        // Add your start game logic here
+        Debug.Log("[TitleScreenUI] ▶️ Start button clicked.");
+    }
 
-        private void Awake()
+    private void OnQuitClicked()
+    {
+        PlayAudio(quitCue);
+        // Add your quit logic here
+        Debug.Log("[TitleScreenUI] ❌ Quit button clicked.");
+    }
+
+    private void PlayAudio(AudioCue cue)
+    {
+        if (buttonAudio != null && cue != AudioCue.ButtonClick) // fallback check
         {
-            startButton.onClick.AddListener(HandleStart);
-            creditsButton.onClick.AddListener(HandleCredits);
-            quitButton.onClick.AddListener(HandleQuit);
+            buttonAudio.PlayOneShot(GetClip(cue));
         }
+    }
 
-        private void HandleStart()
-        {
-            PlayAudio(startCue);
-            StartCoroutine(FadeAndLoadScene(gameSceneName));
-        }
-
-        private void HandleCredits()
-        {
-            // TODO: Implement credits screen logic
-        }
-
-        private void HandleQuit()
-        {
-            PlayAudio(quitCue);
-            Application.Quit();
-        }
-
-        private void PlayAudio(AudioCue cue)
-        {
-            if (buttonAudio != null && cue != AudioCue.None)
-            {
-                buttonAudio.PlayOneShot(AudioManager.GetClip(cue));
-            }
-        }
-
-        private System.Collections.IEnumerator FadeAndLoadScene(string sceneName)
-        {
-            float timer = 0f;
-            while (timer < fadeDuration)
-            {
-                fader.alpha = timer / fadeDuration;
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
-        }
+    private AudioClip GetClip(AudioCue cue)
+    {
+        // Replace this with your actual cue-to-clip logic
+        // For now, return a placeholder or null
+        return null;
     }
 }

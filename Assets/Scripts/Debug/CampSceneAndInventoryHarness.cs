@@ -1,57 +1,32 @@
-// Filename: CampSceneAndInventoryHarness.cs
-// Location: Assets/Scripts/Harness
-// Namespace: Harness
-
-using Data;        // For RecipeData
-using Environment; // For CampData and CampObjectSpawner
-using Inventory;   // For StoragePanelBinder and InventoryUIUpdater
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Systems;
+using Core.Shared.Models;
 
-namespace Harness
+public class CampSceneAndInventoryHarness : MonoBehaviour
 {
-    public class CampSceneAndInventoryHarness : MonoBehaviour
+    [Header("UI Panels")]
+    public GameObject[] storagePanels;
+
+    [Header("Storage Containers")]
+    public GameObject[] storageContainers;
+
+    [Header("Inventory")]
+    public GameObject inventoryRoot;
+    public GameObject inventoryPanel;
+
+    [Header("Crafting")]
+    public GameObject recipePanel;
+    public CraftingRecipe[] availableRecipes;
+
+    private void Start()
     {
-        [Header("Camp Setup")]
-        public CampData campData;
-        public CampObjectSpawner objectSpawner;
+        // Bind storage panels to containers
+        StoragePanelBinder.BindPanelsToContainers(storagePanels, storageContainers);
 
-        [Header("Inventory")]
-        public StoragePanelBinder storagePanelBinder;
-        public InventoryUIUpdater uiUpdater;
+        // Refresh inventory UI
+        InventoryUIUpdater.RefreshAll();
 
-        [Header("Recipes")]
-        public RecipeData[] recipeBook;
-
-        private void Awake()
-        {
-            InitializeCamp();
-            BindInventory();
-        }
-
-        private void InitializeCamp()
-        {
-            if (campData != null && objectSpawner != null)
-            {
-                objectSpawner.SpawnCampObjects(campData);
-            }
-            else
-            {
-                Debug.LogWarning("CampData or ObjectSpawner not assigned.");
-            }
-        }
-
-        private void BindInventory()
-        {
-            if (storagePanelBinder != null && uiUpdater != null)
-            {
-                storagePanelBinder.BindPanels();
-                uiUpdater.RefreshInventoryDisplay();
-            }
-            else
-            {
-                Debug.LogWarning("Inventory binder or UI updater not assigned.");
-            }
-        }
+        // TODO: Use availableRecipes to populate crafting panel
+        Debug.Log("CampSceneAndInventoryHarness initialized.");
     }
 }

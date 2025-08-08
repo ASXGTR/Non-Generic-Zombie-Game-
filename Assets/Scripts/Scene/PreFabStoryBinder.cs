@@ -1,4 +1,5 @@
 // File: Assets/Scripts/Scene/PrefabStoryBinder.cs
+
 using UnityEngine;
 using Flags;
 
@@ -10,11 +11,18 @@ namespace Game.DialogueSystem
     /// </summary>
     public class PrefabStoryBinder : MonoBehaviour
     {
+        [SerializeField] private StoryFlags flagSystem;
         [SerializeField] private string[] flagsToCheck;
         [SerializeField] private GameObject[] activateIfTrue;
 
         private void Start()
         {
+            if (flagSystem == null)
+            {
+                Debug.LogWarning("[PrefabStoryBinder] FlagSystem reference is missing.");
+                return;
+            }
+
             if (flagsToCheck.Length != activateIfTrue.Length)
             {
                 Debug.LogWarning("[PrefabStoryBinder] Mismatched flag and object arrays.");
@@ -32,7 +40,7 @@ namespace Game.DialogueSystem
                     continue;
                 }
 
-                bool active = StoryFlags.IsSet(flag);
+                bool active = flagSystem.IsSet(flag);
                 target.SetActive(active);
 
                 Debug.Log($"[PrefabStoryBinder] Flag '{flag}' is {(active ? "set" : "unset")}. Target '{target.name}' {(active ? "enabled" : "disabled")}.");

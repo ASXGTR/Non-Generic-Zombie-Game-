@@ -3,7 +3,9 @@
   "references": [
     "Core.Shared",
     "Core.Shared.Enums",
-    "Core.Shared.Models"
+    "Core.Shared.Models",
+"Unity.TextMeshPro"
+
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

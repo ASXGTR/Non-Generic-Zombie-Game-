@@ -3,7 +3,8 @@
   "references": [
     "Systems",
     "Core",
-    "Core.Shared"
+    "Core.Shared",
+    "Inventory"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

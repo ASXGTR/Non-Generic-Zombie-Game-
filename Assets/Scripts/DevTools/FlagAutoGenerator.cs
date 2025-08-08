@@ -1,10 +1,17 @@
+﻿// File: Assets/Scripts/DevTools/FlagAutoGenerator.cs
+
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using Flags; // ✅ Required to resolve StoryFlags
 
 namespace DevTools
 {
 #if UNITY_EDITOR
+    /// <summary>
+    /// Editor tool to auto-generate a StoryFlags asset from dialogue files.
+    /// Scans for lines containing '$flagName' and creates entries.
+    /// </summary>
     public class FlagAutoGenerator : EditorWindow
     {
         private string flagAssetName = "StoryFlags";
@@ -35,8 +42,13 @@ namespace DevTools
                     {
                         if (line.Contains("$")) // crude flag reference check
                         {
-                            string key = line.Trim().Split('$')[1].Split(' ')[0];
-                            allFlags.Add(key);
+                            string[] parts = line.Trim().Split('$');
+                            if (parts.Length > 1)
+                            {
+                                string key = parts[1].Split(' ')[0].Trim();
+                                if (!string.IsNullOrEmpty(key))
+                                    allFlags.Add(key);
+                            }
                         }
                     }
                 }
@@ -45,9 +57,12 @@ namespace DevTools
                 foreach (var flag in allFlags)
                     flagAsset.SetFlag(flag, false);
 
-                AssetDatabase.CreateAsset(flagAsset, $"Assets/Flags/{flagAssetName}.asset");
+                string assetPath = $"Assets/Flags/{flagAssetName}.asset";
+                Directory.CreateDirectory("Assets/Flags");
+                AssetDatabase.CreateAsset(flagAsset, assetPath);
                 AssetDatabase.SaveAssets();
-                UnityEngine.Debug.Log($"[FlagAutoGenerator] Created StoryFlags asset with {allFlags.Count} flags.");
+
+                Debug.Log($"[FlagAutoGenerator] Created StoryFlags asset at '{assetPath}' with {allFlags.Count} flags.");
             }
         }
     }

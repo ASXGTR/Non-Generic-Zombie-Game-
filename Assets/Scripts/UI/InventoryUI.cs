@@ -1,4 +1,5 @@
 using Core.Shared.Models;
+using Game.Inventory;
 using Game.UI;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,7 @@ public class InventoryUI : MonoBehaviour
     public GameObject SlotPrefab;
     public GameObject SelectionFrame;
 
-    private List<InventoryUISlot> activeSlots = new List<InventoryUISlot>();
+    private List<InventoryUISlot> activeSlots = new();
     private int selectedIndex = 0;
 
     void Start()
@@ -61,16 +62,16 @@ public class InventoryUI : MonoBehaviour
         SelectionFrame.transform.position = activeSlots[selectedIndex].transform.position;
     }
 
-    private void UseItem(InventoryItem item)
+    private void UseItem(ItemInstance item)
     {
-        if (item.IsConsumable)
+        if (item.Data != null && item.Data.HasTag("Consumable"))
         {
             InventoryManager.Instance.RemoveItem(item.ItemName);
             RefreshUI();
         }
     }
 
-    private void DropItem(InventoryItem item)
+    private void DropItem(ItemInstance item)
     {
         InventoryManager.Instance.RemoveItem(item.ItemName);
         RefreshUI();

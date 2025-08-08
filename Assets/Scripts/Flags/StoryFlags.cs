@@ -1,56 +1,93 @@
-// File: Assets/Scripts/Flags/StoryFlags.cs
+﻿// File: Assets/Scripts/Flags/StoryFlags.cs
 
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Flags
 {
     /// <summary>
-    /// Global static registry for story progression flags.
-    /// Used to track narrative state across scenes and systems.
+    /// Global registry for story progression flags.
+    /// Serialized as a ScriptableObject for scene and system access.
     /// </summary>
-    public static class StoryFlags
+    [CreateAssetMenu(fileName = "StoryFlags", menuName = "Flags/StoryFlags")]
+    public class StoryFlags : ScriptableObject
     {
-        private static readonly Dictionary<string, bool> flags = new();
+        [Serializable]
+        public struct FlagEntry
+        {
+            public string key;
+            public bool value;
+        }
 
-        /// <summary>
-        /// Checks if a flag is set to true.
-        /// </summary>
-        public static bool IsSet(string key) =>
-            flags.ContainsKey(key) && flags[key];
+        [SerializeField] private List<FlagEntry> serializedFlags = new();
 
-        /// <summary>
-        /// Sets a flag to true.
-        /// </summary>
-        public static void Set(string key) =>
-            flags[key] = true;
+        private Dictionary<string, bool> flags = new();
 
-        /// <summary>
-        /// Sets a flag to a specific boolean value.
-        /// </summary>
-        public static void Set(string key, bool value) =>
-            flags[key] = value;
-
-        /// <summary>
-        /// Clears all flags.
-        /// </summary>
-        public static void Clear() =>
+        private void OnEnable()
+        {
             flags.Clear();
+            foreach (var entry in serializedFlags)
+                flags[entry.key] = entry.value;
+        }
 
-        // --- Aliases for legacy calls ---
+        /// <summary>Checks if a flag is set to true.</summary>
+        public bool IsSet(string key) =>
+            flags.TryGetValue(key, out var value) && value;
 
-        /// <summary>
-        /// Alias for IsSet. Preserves compatibility with GetFlag calls.
-        /// </summary>
-        public static bool GetFlag(string key) => IsSet(key);
+        /// <summary>Sets a flag to true.</summary>
+        public void Set(string key)
+        {
+            Set(key, true);
+        }
 
-        /// <summary>
-        /// Alias for Set. Preserves compatibility with SetFlag calls.
-        /// </summary>
-        public static void SetFlag(string key) => Set(key);
+        /// <summary>Sets a flag to a specific boolean value.</summary>
+        public void Set(string key, bool value)
+        {
+            flags[key] = value;
+            UpdateSerializedEntry(key, value);
+        }
 
-        /// <summary>
-        /// Alias for Set with value. Preserves compatibility with SetFlag(key, value).
-        /// </summary>
-        public static void SetFlag(string key, bool value) => Set(key, value);
+        /// <summary>Clears all flags.</summary>
+        public void Clear()
+        {
+            flags.Clear();
+            serializedFlags.Clear();
+        }
+
+        /// <summary>Returns all currently tracked flag keys.</summary>
+        public IEnumerable<string> GetAllKeys()
+        {
+            return flags.Keys;
+        }
+
+        // ──────────────────────────────────────
+        // 🧭 Legacy Aliases
+        // ──────────────────────────────────────
+
+        public bool GetFlag(string key) => IsSet(key);
+        public void SetFlag(string key) => Set(key);
+        public void SetFlag(string key, bool value) => Set(key, value);
+
+        // ──────────────────────────────────────
+        // 🧠 Internal Sync
+        // ──────────────────────────────────────
+
+        private void UpdateSerializedEntry(string key, bool value)
+        {
+            for (int i = 0; i < serializedFlags.Count; i++)
+            {
+                if (serializedFlags[i].key == key)
+                {
+                    serializedFlags[i] = new FlagEntry { key = key, value = value };
+                    return;
+                }
+            }
+
+            serializedFlags.Add(new FlagEntry { key = key, value = value });
+        }
+
+        public override string ToString() =>
+            $"StoryFlags ({flags.Count} flags)";
     }
 }

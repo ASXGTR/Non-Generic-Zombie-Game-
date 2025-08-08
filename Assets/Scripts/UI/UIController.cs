@@ -1,4 +1,5 @@
 using Core.Shared.Models;
+using Game.Inventory;
 using Game.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,7 +39,7 @@ public class UIController : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        var items = InventoryManager.Instance.GetAllItems();
+        var items = InventoryManager.Instance.GetAllItems(); // Should return List<ItemInstance>
         foreach (var item in items)
         {
             GameObject slotGO = Instantiate(SlotPrefab, SlotContainer);
@@ -47,18 +48,21 @@ public class UIController : MonoBehaviour
         }
     }
 
-    private void UseItem(InventoryItem item)
+    private void UseItem(ItemInstance item)
     {
-        if (item.IsConsumable)
+        if (item != null && item.HasTag("Consumable"))
         {
-            InventoryManager.Instance.RemoveItem(item.ItemName);
+            InventoryManager.Instance.RemoveItem(item.Data.ItemName);
             UpdateInventoryUI();
         }
     }
 
-    private void DropItem(InventoryItem item)
+    private void DropItem(ItemInstance item)
     {
-        InventoryManager.Instance.RemoveItem(item.ItemName);
-        UpdateInventoryUI();
+        if (item?.Data != null)
+        {
+            InventoryManager.Instance.RemoveItem(item.Data.ItemName);
+            UpdateInventoryUI();
+        }
     }
 }

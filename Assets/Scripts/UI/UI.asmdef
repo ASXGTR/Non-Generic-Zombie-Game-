@@ -1,20 +1,22 @@
 {
-  "name": "UI",
-  "references": [
-    "Core.Shared",
-    "Core.Shared.Enums",
-    "Inventory",
-    "Systems",
-    "Game",
-    "Audio"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "UI",
+    "rootNamespace": "",
+    "references": [
+        "Core.Shared",
+        "Core.Shared.Enums",
+        "Inventory",
+        "Systems",
+        "Game",
+        "Audio",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

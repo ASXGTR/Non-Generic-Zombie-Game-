@@ -1,13 +1,14 @@
+// File: Assets/Scripts/UI/ItemSlotUI.cs
+
 using Core.Shared.Models;
-﻿using Game.Inventory;
+using Game.Inventory;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 namespace Game.UI
 {
     /// <summary>
-    /// Visual slot for displaying either InventoryItem or ItemData info in the UI.
+    /// Visual slot for displaying either ItemInstance or ItemData info in the UI.
     /// Robust against nulls, missing fields, and namespace collisions.
     /// </summary>
     public class ItemSlotUI : MonoBehaviour
@@ -23,13 +24,13 @@ namespace Game.UI
         private Sprite sourceIcon;
 
         /// <summary>
-        /// Assigns data using InventoryItem component.
+        /// Assigns data using ItemInstance component.
         /// </summary>
-        public void Initialize(InventoryItem item)
+        public void Initialize(ItemInstance item)
         {
-            if (item != null && item.icon != null)
+            if (item != null && item.Data != null && item.Data.icon != null)
             {
-                sourceIcon = item.icon;
+                sourceIcon = item.Data.icon;
             }
             else
             {
@@ -40,19 +41,11 @@ namespace Game.UI
         }
 
         /// <summary>
-        /// Assigns data using base Item (non-MonoBehaviour fallback).
+        /// Assigns data using base ItemData (non-MonoBehaviour fallback).
         /// </summary>
-        public void Initialize(Item item)
+        public void Initialize(ItemData itemData)
         {
-            if (item != null && item.icon != null)
-            {
-                sourceIcon = item.icon;
-            }
-            else
-            {
-                sourceIcon = null;
-            }
-
+            sourceIcon = itemData != null ? itemData.icon : null;
             UpdateVisuals();
         }
 
