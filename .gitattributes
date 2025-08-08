@@ -1,5 +1,19 @@
-* text=auto
-*.cs text eol=lf
-*.asset text eol=lf
-*.unity text eol=lf
-*.meta text eol=lf
+###########################################
+# GITATTRIBUTES — THE DAYZ AHEAD ARCHIVE
+# Line endings shall obey. No CRLF betrayal.
+###########################################
+
+# === DEFAULT BEHAVIOR ===
+* text=auto         # Normalize all text files (unless overridden)
+
+# === UNITY FILES ===
+*.cs     text eol=lf     # C# scripts — LF or bust
+*.asset  text eol=lf     # Unity assets — no CRLF corruption
+*.unity  text eol=lf     # Scenes — keep them mergeable
+*.meta   text eol=lf     # GUID anchors — must stay clean
+
+###########################################
+# END OF ATTRIBUTES
+# This file enforces discipline.
+# Alpha 1.0 will not inherit CRLF sins.
+###########################################

@@ -4,7 +4,10 @@
     "Inventory",
     "Environment",
     "UI",
-    "Systems"
+    "Systems",
+    "Core",
+    "Core.Shared.Models",
+    "Flags"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

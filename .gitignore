@@ -1,20 +1,22 @@
-#############################
-# Unity Project `.gitignore`
-# Clean public repo setup
-#############################
+###########################################
+# UNITY GITIGNORE — THE DAYZ AHEAD ARCHIVE
+# This file marks the end of chaos.
+# Legacy project preserved. No more folder rot.
+###########################################
 
-# ========== Unity folders ==========
-[Libraries]
+# === UNITY VOLATILE FOLDERS ===
+# These folders regenerate. Keeping them is masochism.
 Library/
 Temp/
 Obj/
 Build/
 Builds/
 Logs/
-UserSettings/
 MemoryCaptures/
+UserSettings/     # Editor prefs — not portable, not sacred
 
-# ========== Unity generated files ==========
+# === UNITY GENERATED FILES ===
+# IDE vomit and Unity's forgotten children
 *.pidb
 *.booproj
 *.svd
@@ -28,33 +30,55 @@ MemoryCaptures/
 *.unityproj
 *.pidb.meta
 
-# ========== IDE and editor junk ==========
+# === IDE & EDITOR CLUTTER ===
 .vs/
+.idea/
+.vscode/
 *.csproj
 *.sln
 *.user
 *.orig
 *.bak
 *.old
+
+# === OS-SPECIFIC JUNK ===
 .DS_Store
 Thumbs.db
-
-# ========== OS-specific stuff ==========
 *.exe
 *.apk
 *.unitypackage
 
-# ========== Ignore meta files (optional) ==========
-*.meta
-!Assets/**/*.cs.meta   # keep meta for scripts if needed
+# === CRASHES & LOGS ===
+*.crash
+*.log
+*.stacktrace
 
-# ========== Explicit keep rules ==========
-!Assets/**/*.cs         # Keep all C# scripts
-!Assets/**/*.shader     # Optional: keep shaders
-!Assets/**/*.asmdef     # Optional: keep assembly definitions
-!Assets/**/*.json       # Optional: config files
+# === VERSION CONTROL STRAGGLERS ===
+.collabignore
+.plastic/
 
-# ========== Misc cleanup ==========
-# Ignore empty folders left by Unity
+# === META FILES ===
+# Meta files are GUID anchors. Ignore them at your peril.
+# Uncomment below to ignore all (not recommended for archive)
+# *.meta
+
+# Keep meta files for traceable assets
+!Assets/**/*.meta
+!ProjectSettings/**/*.meta
+
+# === EXPLICIT KEEP RULES ===
+# These are the survivors. Everything else burns.
+!Assets/**/*.cs         # C# scripts
+!Assets/**/*.shader     # Shaders
+!Assets/**/*.asmdef     # Assembly definitions
+!Assets/**/*.json       # Config files
+
+# === EMPTY FOLDER CLEANUP ===
 **/.DS_Store
 **/Thumbs.db
+
+###########################################
+# END OF IGNORE LIST
+# This marks the final breath of "The Dayz Ahead"
+# Alpha 1.0 will rise from this grave.
+###########################################

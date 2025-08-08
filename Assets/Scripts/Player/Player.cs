@@ -1,4 +1,6 @@
+// File: Assets/Scripts/Player/Player.cs
 using Core.Shared.Models;
+
 namespace Project.Player
 {
     using Game.Inventory;
@@ -6,6 +8,7 @@ namespace Project.Player
 
     public class Player : MonoBehaviour
     {
+        [Header("UI References")]
         public UIController UIController;
         public GameObject DeadScreen;
 
@@ -23,7 +26,7 @@ namespace Project.Player
             UIController.InventoryPanel.SetActive(false); // Hide inventory on death
         }
 
-        public void OnItemPickup(InventoryItem item)
+        public void OnItemPickup(ItemInstance item)
         {
             InventoryManager.Instance.AddItem(item);
             UIController.ToggleInventory(); // Optional: auto-show inventory

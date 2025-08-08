@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
-using InventorySystem; // ✅ This brings in your actual Item.cs
+using Core.Shared.Models;
 
 public class PlayerVitalsFacade : MonoBehaviour
 {
     public int health;
     public int stamina;
-    public Item equippedItem;
+    public ItemInstance equippedItem;
 
-    public void Initialize(int startingHealth, int startingStamina, Item startingItem)
+    public void Initialize(int startingHealth, int startingStamina, ItemInstance startingItem)
     {
         health = startingHealth;
         stamina = startingStamina;
@@ -26,7 +26,7 @@ public class PlayerVitalsFacade : MonoBehaviour
         if (stamina < 0) stamina = 0;
     }
 
-    public void EquipItem(Item newItem)
+    public void EquipItem(ItemInstance newItem)
     {
         equippedItem = newItem;
     }

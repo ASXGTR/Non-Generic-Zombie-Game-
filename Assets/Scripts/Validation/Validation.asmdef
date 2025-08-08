@@ -2,7 +2,11 @@
   "name": "Validation",
   "references": [
     "Narrative",
-    "Flags"
+    "Flags",
+    "Core.Shared.Models",
+    "Inventory",
+    "Systems",
+    "Inventory.UI"
   ],
   "autoReferenced": true
 }

@@ -1,7 +1,7 @@
+// File: Assets/Scripts/Player/PlayerStats.cs
 using Core.Shared.Models;
-﻿// File: Assets/Scripts/Player/PlayerStats.cs
-using UnityEngine;
 using Game.Inventory;
+using UnityEngine;
 
 namespace Player
 {
@@ -23,7 +23,7 @@ namespace Player
 #endif
         }
 
-        public InventoryItem GetEquippedItem(string slotName)
+        public ItemInstance GetEquippedItem(string slotName)
         {
             if (equipmentManager == null || string.IsNullOrEmpty(slotName))
                 return null;

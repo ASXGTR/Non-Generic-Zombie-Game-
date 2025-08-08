@@ -1,6 +1,6 @@
-using UnityEngine;
-using InventorySystem;
 using Core.Shared.Models;
+using Flags;
+using UnityEngine;
 
 public class PlayerStateController : MonoBehaviour
 {
@@ -9,7 +9,7 @@ public class PlayerStateController : MonoBehaviour
     public PlayerConditionManager conditionManager;
 
     [Header("Equipped Item")]
-    public Item equippedItem;
+    public ItemInstance equippedItem;
 
     private void Awake()
     {
@@ -18,7 +18,7 @@ public class PlayerStateController : MonoBehaviour
         if (conditionManager == null) conditionManager = GetComponentInChildren<PlayerConditionManager>();
     }
 
-    public void InitializePlayerState(int health, int stamina, Item startingItem)
+    public void InitializePlayerState(int health, int stamina, ItemInstance startingItem)
     {
         vitals.Initialize(health, stamina, startingItem);
         equippedItem = startingItem;
@@ -39,7 +39,7 @@ public class PlayerStateController : MonoBehaviour
         return conditionManager.HasCondition(condition);
     }
 
-    public void EquipItem(Item newItem)
+    public void EquipItem(ItemInstance newItem)
     {
         equippedItem = newItem;
         vitals.EquipItem(newItem);

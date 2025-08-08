@@ -1,7 +1,5 @@
-using Game.Inventory;
-using Inventory;
-using Systems;
-using Systems.Cooking;
+﻿using Core.Shared.Models;       // ✅ For ItemData
+using Systems.Cooking;          // ✅ For CookingValidator, CookingOutcomeCalculator, RecipeData
 using UnityEngine;
 
 namespace Debug
@@ -16,7 +14,7 @@ namespace Debug
             if (CookingValidator.CanBeCooked(testIngredients[0]))
             {
                 float burnChance = CookingOutcomeCalculator.GetBurnChance(recipe, testIngredients);
-                UnityEngine.Debug.Log($"Burn chance: {burnChance}%");
+                Debug.Log($"Burn chance: {burnChance}%");
             }
         }
     }

@@ -5,7 +5,8 @@
     "Core.Shared.Enums",
     "Inventory",
     "Game",
-    "UI"
+    "UI",
+    "Flags"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
